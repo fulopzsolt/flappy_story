@@ -46,7 +46,6 @@ function scene:createScene(event)
 	physics.addBody(platform, "static", {density=.1, bounce=0.1, friction=.2})
 	platform.speed = 4
 	screenGroup:insert(platform)
-
 	platform2 = display.newImageRect('platform.png',900,53)
 	platform2.anchorX = 0
 	platform2.anchorY = 1
@@ -115,7 +114,7 @@ end
 
 function getNextHeight()
 	local nextY = math.random(player.y - 50, player.y + 50)
-	if (nextY > 10 and nextY < display.contentHeight - 10) then
+	if (nextY > 40 and nextY < display.viewableContentHeight - 200) then
 	 	return nextY
 	else
 		nextY = getNextHeight()
@@ -147,7 +146,7 @@ function flyTheBird()
 		end
 end
 
-
+local distanceHelper = 170
 function moveColumns()
 		for a = elements.numChildren,1,-1  do
 			elements[a].tag ='column'
@@ -160,13 +159,27 @@ function moveColumns()
 					elements[a].scoreAdded = true
 				end
 			end
+			if(elements[a].x < display.contentCenterX - distanceHelper) then
+
+				if (elements[a].newColumnCreated == false) then
+					if ((mydata.score % 2 == 0) and (distanceHelper > 50)) then
+						distanceHelper = distanceHelper - 5
+						print(distanceHelper..'____distanceHelper')
+					end
+					addColumns()
+					elements[a].newColumnCreated = true
+				end
+			end
+
+			
 			if(elements[a].x < display.contentCenterX - 170) then
 				if (elements[a].added == false) then
 					elements[a].added = true
-				addColumns()
+				
 				end
 				
 			end
+			
 			if(elements[a].x > -300) then
 				elements[a].x = elements[a].x - 5
 			else 
@@ -197,7 +210,6 @@ function addDragMove(event)
 
 				
 				-- local y = (event.y - event.yStart) + markY
-				print(event.y..'__________')
 				local y2 = (event.y - markY)/10
 				if (event.y - markY ~= 0) then
 					local y = (event.y - markY)
@@ -224,6 +236,7 @@ function addColumns()
 	column.tag = 'column'
 	column.added = false
 	column.scoreAdded = false
+	column.newColumnCreated = false
 	-- physics.addBody(column, "kinematic", {density=1, bounce=0.1, friction=.2})
 	
 	physics.addBody( column, "kinematic", physicsData:get("column3") )
