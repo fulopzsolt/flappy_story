@@ -98,7 +98,7 @@ end
 
 function onCollision( event )
 	if ( event.phase == "began" ) then
-		storyboard.gotoScene( "restart" )	
+		-- storyboard.gotoScene( "restart" )	
 	end
 end
 
@@ -145,10 +145,6 @@ function flyTheBird()
 		else 
 			nextHeight = getNextHeight()
 		end
-		local vx, vy = player:getLinearVelocity()
-		print(player.y..'__nnn')
-		
-		print(player.y)
 end
 
 
@@ -187,7 +183,6 @@ function moveColumns()
 end
 
 function addDragMove(event)
-		print(event.target.tag)
 		goodTouch = false
 	    if event.phase == "began" then
 
@@ -200,12 +195,15 @@ function addDragMove(event)
 			return false
 	    elseif event.phase == "moved" then
 
-			
-				local y = (event.y - event.yStart) + markY
-		        if (event.y - markY > 10 or event.y - markY < -10) then
-		        	objectToMove.y = y    -- move object based on calculations above
-		        end
-				        
+				
+				-- local y = (event.y - event.yStart) + markY
+				print(event.y..'__________')
+				local y2 = (event.y - markY)/10
+				if (event.y - markY ~= 0) then
+					local y = (event.y - markY)
+					objectToMove.y = objectToMove.y + y
+					markY = event.y
+				end
 	    end
 	    
 	    return true
@@ -257,7 +255,7 @@ function scene:enterScene(event)
 
 end
 function payerPos()
-	print(player.y..'____yyyyy')
+	-- print(player.y..'____yyyyy')
 end
 function scene:exitScene(event)
 
