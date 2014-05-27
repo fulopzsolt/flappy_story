@@ -51,19 +51,24 @@ end
 function scene:createScene(event)
 
 	local screenGroup = self.view
-
 	background = display.newImageRect("bg.png",900,1425)
 	background.anchorX = 0.5
-	background.anchorY = 0.5
+	background.anchorY = 1
 	background.x = display.contentCenterX
-	background.y = display.contentCenterY
+	background.y = display.contentHeight
 	screenGroup:insert(background)
+	-- background = display.newImageRect("bg.png",900,1425)
+	-- background.anchorX = 0.5
+	-- background.anchorY = 0.5
+	-- background.x = display.contentCenterX
+	-- background.y = display.contentCenterY
+	-- screenGroup:insert(background)
 	
 	gameOver = display.newImageRect("gameOver.png",500,100)
 	gameOver.anchorX = 0.5
 	gameOver.anchorY = 0.5
 	gameOver.x = display.contentCenterX 
-	gameOver.y = display.contentCenterY - 400
+	gameOver.y = display.contentCenterY - 300
 	gameOver.alpha = 0
 	screenGroup:insert(gameOver)
 	

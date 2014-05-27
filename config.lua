@@ -4,14 +4,6 @@ local aspectRatio = display.pixelHeight / display.pixelWidth
 
 
 application = {
-   settings =
-{
-    orientation =
-    {
-        default = "landscapeRight",
-        supported = { "landscapeLeft", "landscapeRight" },
-    },
-},
    content = {
 	  -- graphicsCompatibility = 1,  -- Turn on V1 Compatibility Mode
       width = aspectRatio > 1.5 and 800 or math.ceil( 1200 / aspectRatio ),

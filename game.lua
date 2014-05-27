@@ -1,4 +1,5 @@
 local physics = require "physics"
+-- local rotation = require ("rotationfix")
 physics.start()
 physics.setGravity( 0, 0 )
 
@@ -9,13 +10,13 @@ local scene = storyboard.newScene()
 mydata.score = 0
 
 function scene:createScene(event)
-	physics.setDrawMode("hybrid")
+	-- physics.setDrawMode("hybrid")
 	local screenGroup = self.view
 
-	local background = display.newImage("bg.png")
+	local background = display.newImage("bg2.png",900,1425)
 	screenGroup:insert(background)
 
-    bg = display.newImageRect('bg.png',900,1425)
+    bg = display.newImageRect('bg2.png',1200,1425)
 	bg.anchorX = 0
 	bg.anchorY = 1
 	bg.x = 0
