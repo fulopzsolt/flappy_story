@@ -6,36 +6,39 @@ local scene = storyboard.newScene()
 local mydata = require( "mydata" )
 local score = require( "score" )
 
+----------------------------------
+----------------------------------
+-- ----AD-------------------------
+-- Hide the status bar
 display.setStatusBar( display.HiddenStatusBar )
 
 -- The name of the ad provider.
-adNetwork = "admob"
+local provider = "admob"
 
 -- Your application ID
-appID = "ca-app-pub-4047264809121768/6483277533"
+local appID = "ca-app-pub-4047264809121768/6483277533"
 
 -- Load Corona 'ads' library
 local ads = require "ads"
 
--- Initialize the 'ads' library with the provider you wish to use.
+--------------------------------------------------------------------------------
+-- Setup ad provider
+--------------------------------------------------------------------------------
 
-
- -- initial variables
-local sysModel = system.getInfo("model")
-local sysEnv = system.getInfo("environment")
+-- Create a text object to display ad status
 local statusText = display.newText( "", 0, 0, native.systemFontBold, 22 )
 statusText:setFillColor( 255 )
 -- statusText:setReferencePoint( display.CenterReferencePoint )
 statusText.x, statusText.y = display.contentWidth * 0.5, 160
 
 local showAd
+
+-- Set up ad listener.
 local function adListener( event )
-	if (event.phase == "began") then
 	-- event table includes:
 	-- 		event.provider
 	--		event.isError (e.g. true/false )
-	print("event.phase")
-end
+	
 	local msg = event.response
 
 	-- just a quick debug message to check what response we got from the library
@@ -54,44 +57,45 @@ end
 	end
 end
 
-
+-- Initialize the 'ads' library with the provider you wish to use.
 if appID then
-	
-    -- local adX, adY = display.contentCenterX, display.contentCenterY
-    adX = display.contentWidth/2
-	adY = display.contentHeight/2
-    local halfW = display.contentWidth * 0.5
-    local size = 26
-    if sysEnv == "simulator" then
-    	print('nbbbbbbbbbbbbbb')
-    	-- ads.show( "banner", { x=adX, y=adY} )
-        local warningText2 = display.newText( "Please build for device ", adX, adY, font, size )
-        local warningText3 = display.newText( "to test this sample code.", adX, adY, font, size )
-        warningText2:setFillColor( 255, 255, 255)
-        warningText3:setFillColor( 255, 255, 255)
-        -- warningText2:setReferencePoint( display.CenterReferencePoint )
-        -- warningText3:setReferencePoint( display.CenterReferencePoint )
-        -- warningText2.x, warningText2.y = halfW, 200
-        -- warningText3.x, warningText3.y = halfW, 216
-     	warningText2.x = display.contentWidth/2
-    	warningText2.y = display.contentHeight/2
-    	warningText3.x = display.contentWidth/2
-    	warningText3.y = display.contentHeight/2
-    else
-        ads.show( "banner", { x=adX, y=adY} )
-    end
+	ads.init( provider, appID, adListener )
+end
+
+--------------------------------------------------------------------------------
+-- UI
+--------------------------------------------------------------------------------
+
+-- initial variables
+local sysModel = system.getInfo("model")
+local sysEnv = system.getInfo("environment")
+
+statusText:toFront()
+
+-- Shows a specific type of ad
+showAd = function( adType )
+	local adX, adY = display.screenOriginX, display.screenOriginY
+	statusText.text = ""
+	ads.show( adType, { x=adX, y=adY } )
+end
+
+-- if on simulator, let user know they must build for device
+if sysEnv == "simulator" then
+	local font, size = native.systemFontBold, 22
+	local warningText = display.newText( "Please build for device or Xcode simulator to test this sample.", 0, 0, 290, 300, font, size )
+	warningText:setFillColor( 255 )
+	-- warningText:setReferencePoint( display.CenterReferencePoint )
+	warningText.x, warningText.y = display.contentWidth * 0.5, display.contentHeight * 0.5
 else
-    -- If no appId is set, show a message on the screen
-    local warningText1 = display.newText( "No appID has been set.", 0, 105, font, size )
-    warningText1:setFillColor( 255, 255, 255)
-    -- warningText1:setReferencePoint( display.CenterReferencePoint )
-    warningText1.x = display.contentWidth/2
-    warningText1.y = display.contentHeight/2
+	-- start with banner ad
+	showAd( "interstitial" )
 end
 
 
 
-
+-- ----AD-------------------------
+----------------------------------
+----------------------------------
 
 -- background
 
@@ -103,10 +107,6 @@ function restartGame(event)
 end
 
 function showStart()
-	print('aaaaaaaaaa')
-	if appID then
-	 ads.init( adNetwork, appID, adListener )
-	end
 	startTransition = transition.to(restart,{time=200, alpha=1})
 	scoreTextTransition = transition.to(scoreText,{time=600, alpha=1})
 	scoreTextTransition = transition.to(bestText,{time=600, alpha=1})
@@ -227,16 +227,3 @@ scene:addEventListener("exitScene", scene)
 scene:addEventListener("destroyScene", scene)
 
 return scene
-
-
-
-
-
-
-
-
-
-
-
-
-
