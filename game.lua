@@ -98,7 +98,8 @@ end
 
 function onCollision( event )
 	if ( event.phase == "began" ) then
-		storyboard.gotoScene( "ad" )	
+		storyboard.gotoScene( "ad" )
+		storyboard.gotoScene( "restart" )	
 	end
 end
 

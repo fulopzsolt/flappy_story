@@ -59,7 +59,7 @@ end
 
 -- Initialize the 'ads' library with the provider you wish to use.
 if appID then
-	ads.init( provider, appID, adListener )
+	ads.init( provider, appID )
 end
 
 --------------------------------------------------------------------------------
