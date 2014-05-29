@@ -1,8 +1,11 @@
-settings =
+settings = 
 {
-    orientation =
-    {
-        default = "landscapeRight",
-        supported = { "landscapeLeft", "landscapeRight", "portrait" },
-    },
+	plugins =
+	{
+	   ["CoronaProvider.ads.admob"] =
+	   {
+	      publisherId = "com.coronalabs",
+	      supportedPlatforms = { android = true },
+	   },
+	},	
 }
