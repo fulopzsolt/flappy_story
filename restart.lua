@@ -6,7 +6,50 @@ local scene = storyboard.newScene()
 local mydata = require( "mydata" )
 local score = require( "score" )
 
+------------------------------
+------------------------------
+-----------facebook-----------
+------------------------------
+local facebook = require "facebook"
+ 
+-- You must use your own app id for this sample to work
+local fbAppID = "1408482976102015"  --fake
+ 
+local function onLoginSuccess()
+    -- Upload 'iheartcorona.jpg' to current user's account
+    local attachment = {
+        message = "Just a description of the photo.",
+        source = { baseDir=system.ResourceDirectory, filename="bg.png", type="image" }
+    }
+    
+    facebook.request( "me/photos", "POST", attachment )
+end
+ 
+-- facebook listener
+local function fbListener( event )
+    if event.isError then
+        native.showAlert( "ERROR", event.response, { "OK" } )
+    else
+        if event.type == "session" and event.phase == "login" then
+            -- login was a success; call function
+            onLoginSuccess()
+        
+        elseif event.type == "request" then
+            -- this block is executed upon successful facebook.request() call
+ 
+            native.showAlert( "Success", "The photo has been uploaded.", { "OK" } )
+        end
+    end
+end
+ 
+-- photo uploading requires the "publish_stream" permission
+facebook.login( fbAppID, fbListener, { "publish_action" } )
 
+
+------------------------------
+-----------facebook-----------
+------------------------------
+------------------------------
 -- background
 
 function restartGame(event)
@@ -17,10 +60,6 @@ function restartGame(event)
 end
 
 function showStart()
-	print('aaaaaaaaaa')
-	if appID then
-	 ads.init( adNetwork, appID, adListener )
-	end
 	startTransition = transition.to(restart,{time=200, alpha=1})
 	scoreTextTransition = transition.to(scoreText,{time=600, alpha=1})
 	scoreTextTransition = transition.to(bestText,{time=600, alpha=1})
