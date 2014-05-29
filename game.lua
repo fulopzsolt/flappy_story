@@ -10,11 +10,8 @@ local scene = storyboard.newScene()
 mydata.score = 0
 
 function scene:createScene(event)
-	-- physics.setDrawMode("hybrid")
+	 --physics.setDrawMode("hybrid")
 	local screenGroup = self.view
-
-	local background = display.newImage("bg2.png",900,1425)
-	screenGroup:insert(background)
 
     bg = display.newImageRect('bg2.png',1200,1425)
 	bg.anchorX = 0
@@ -121,8 +118,10 @@ function getNextHeight()
 		nextY = getNextHeight()
 	end
 end
+
 local gameStarted = false
 local nextHeight = getNextHeight()
+
 function flyUp(event)
    if event.phase == "began" then
 		if gameStarted == false then
@@ -133,7 +132,7 @@ function flyUp(event)
 			moveColumnTimer = timer.performWithDelay(2, moveColumns, -1)
 		 	flyTheBirdTimer = timer.performWithDelay(100, flyTheBird, -1)
 			gameStarted = true
-			player:applyForce(0, -300, player.x, player.y)
+			--player:applyForce(0, -300, player.x, player.y)
 		end
 	end
 end
@@ -256,7 +255,7 @@ end
 function scene:enterScene(event)
 	
 	storyboard.removeScene("start")
-	Runtime:addEventListener("touch", flyUp)
+	bg:addEventListener("touch", flyUp)
 
 	platform.enterFrame = platformScroller
 	Runtime:addEventListener("enterFrame", platform)
@@ -273,7 +272,7 @@ function payerPos()
 end
 function scene:exitScene(event)
 
-	Runtime:removeEventListener("touch", flyUp)
+	bg:removeEventListener("touch", flyUp)
 	Runtime:removeEventListener("enterFrame", platform)
 	Runtime:removeEventListener("enterFrame", platform2)
 	Runtime:removeEventListener("collision", onCollision)
