@@ -10,6 +10,7 @@ local scene = storyboard.newScene()
 
 function startGame(event)
      if event.phase == "ended" then
+     	mydata.score = 0
 		storyboard.gotoScene("game")
      end
 end
