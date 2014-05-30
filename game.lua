@@ -123,8 +123,8 @@ end
 local gameStarted = false
 local nextHeight = getNextHeight()
 
-function flyUp(event)
-   if event.phase == "began" then
+function start(event)
+   
 		if gameStarted == false then
 			player.bodyType = "dynamic"
 			instructions.alpha = 0
@@ -135,7 +135,7 @@ function flyUp(event)
 			gameStarted = true
 			--player:applyForce(0, -300, player.x, player.y)
 		end
-	end
+
 end
 function flyTheBird()
 		if (player.y < nextHeight - 20) then 
@@ -197,30 +197,24 @@ function moveColumns()
 end
 
 function addDragMove(event)
-		goodTouch = false
-	    if event.phase == "began" then
-
-			if (event.target.tag == "column") then
-				goodTouch = true
-				objectToMove = event.target
-			end
-	        markX = event.x    -- store x location of object
-	        markY = event.y    -- store y location of object
-			return false
-	    elseif event.phase == "moved" then
-
-				
-				-- local y = (event.y - event.yStart) + markY
-				local y2 = (event.y - markY)/10
-				if (event.y - markY ~= 0) then
-					local y = (event.y - markY)
-					objectToMove.y = objectToMove.y + y
-					markY = event.y
-				end
-	    end
-	    
-	    return true
 	
+	if event.phase == "began" then
+	    markY = event.y	
+	return false
+	else
+		if (event.target.y > 920) then	
+			event.target.y = 920
+		elseif (event.target.y < 105) then 
+			event.target.y = 105
+		else 
+			local y = (event.y - markY)
+			event.target.y = event.target.y + y
+			markY = event.y
+					
+				
+		end
+	end
+	return true
 
 end
 
@@ -256,7 +250,7 @@ end
 function scene:enterScene(event)
 	
 	storyboard.removeScene("start")
-	bg:addEventListener("touch", flyUp)
+	bg:addEventListener("touch", start)
 
 	platform.enterFrame = platformScroller
 	Runtime:addEventListener("enterFrame", platform)
@@ -273,7 +267,7 @@ function payerPos()
 end
 function scene:exitScene(event)
 
-	bg:removeEventListener("touch", flyUp)
+	bg:removeEventListener("touch", start)
 	Runtime:removeEventListener("enterFrame", platform)
 	Runtime:removeEventListener("enterFrame", platform2)
 	Runtime:removeEventListener("collision", onCollision)
