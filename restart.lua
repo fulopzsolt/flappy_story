@@ -5,55 +5,57 @@ local storyboard = require ("storyboard")
 local scene = storyboard.newScene()
 local mydata = require( "mydata" )
 local score = require( "score" )
-
-------------------------------
-------------------------------
------------facebook-----------
-------------------------------
-local facebook = require "facebook"
- 
--- You must use your own app id for this sample to work
-local fbAppID = "1408482976102015"  --fake
- 
-local function onLoginSuccess()
-    -- Upload 'iheartcorona.jpg' to current user's account
-    local attachment = {
-        message = "Just a description of the photo.",
-        source = { baseDir=system.ResourceDirectory, filename="bg.png", type="image" }
-    }
-    
-    facebook.request( "me/photos", "POST", attachment )
-end
- 
--- facebook listener
-local function fbListener( event )
-    if event.isError then
-        native.showAlert( "ERROR", event.response, { "OK" } )
-    else
-        if event.type == "session" and event.phase == "login" then
-            -- login was a success; call function
-            onLoginSuccess()
-        
-        elseif event.type == "request" then
-            -- this block is executed upon successful facebook.request() call
- 
-            native.showAlert( "Success", "The photo has been uploaded.", { "OK" } )
-        end
-    end
-end
- 
--- photo uploading requires the "publish_stream" permission
-facebook.login( fbAppID, fbListener, { "publish_action" } )
+-----------------------------
+-----------------------------
+-----------------------------
+-----------------------------
+-- function myfb()
+-- -- 	local fb = require('fb')
+-- -- fb:setUpAppId('1408482976102015')
+-- -- fb:postMessageToFacebook('playin fckin flappy f')
+-- -- fb:logOut()
 
 
-------------------------------
------------facebook-----------
-------------------------------
-------------------------------
+-- local libFacebook = require("lib_facebook")
+--    libFacebook.FB_App_ID = "1408482976102015"
+--    libFacebook.isDebug = true
+ 
+--    local function onRequestComplete( event )
+--        if event.isError then
+--            print("Facebook request error: " .. event.response.error.message)
+--        else
+--            -- Success - process my friends list
+--            print("Friends list fetched with request: " .. event.request.path)
+--            for _, friend in pairs(event.response.data) do
+--                 print("  Facebook friend: " .. friend.name .. ", id: " .. friend.id)
+--            end
+--        end
+--    end
+ 
+--    local function onLoginComplete( event )
+--        if event.phase ~= "login" then
+--            print("Facebook login not successful")
+--        elseif event.isError then
+--            print("Facebook login error, details: " .. event.response.error.message)
+--        else
+--            -- Successfully logged in, now list my friends
+--            libFacebook.request("me/friends", "GET", {limit = "10"}, onRequestComplete)
+--        end
+--    end
+ 
+--    libFacebook.login({"publish_stream"}, onLoginComplete)
+-- end
+
+
+-----------------------------
+-----------------------------
+-----------------------------
+-----------------------------
 -- background
 
 function restartGame(event)
      if event.phase == "ended" then
+     	-- myfb()
 		saveScore()
 		storyboard.gotoScene("start")
      end

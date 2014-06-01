@@ -10,7 +10,7 @@ local scene = storyboard.newScene()
 mydata.score = 0
 
 function scene:createScene(event)
-	 --physics.setDrawMode("hybrid")
+	-- physics.setDrawMode("hybrid")
 	local screenGroup = self.view
 
     bg = display.newImageRect('bg2.png',1200,1425)
@@ -70,7 +70,7 @@ function scene:createScene(event)
 	player.anchorY = 0.5
 	player.x = display.contentCenterX - 150
 	player.y = display.contentCenterY
-	physics.addBody(player, "static", {density=10, bounce=0.1, friction=3})
+	physics.addBody(player, "static", {density=10, bounce=0, friction=0})
 	-- local physicsData = (require "bat").physicsData(scaleFactor)
 	-- physics.addBody( player, "static", physicsData:get("bat") )
 	player:applyForce(0, -300, player.x, player.y)
@@ -95,8 +95,13 @@ end
 
 function onCollision( event )
 	if ( event.phase == "began" ) then
-		-- storyboard.gotoScene( "ad" )
-		storyboard.gotoScene( "restart" )	
+		if (event.object2.tag == "corn") then
+			event.object2:removeSelf()
+			event.object2 = nil
+		else
+			storyboard.gotoScene( "ad2" )
+			-- storyboard.gotoScene( "restart" )	
+		end
 	end
 end
 
@@ -131,6 +136,7 @@ function start(event)
 			scoreText.alpha = 1
 			addColumns()
 			moveColumnTimer = timer.performWithDelay(2, moveColumns, -1)
+
 		 	flyTheBirdTimer = timer.performWithDelay(100, flyTheBird, -1)
 			gameStarted = true
 			--player:applyForce(0, -300, player.x, player.y)
@@ -150,7 +156,7 @@ end
 local distanceHelper = 170
 function moveColumns()
 		for a = elements.numChildren,1,-1  do
-			elements[a].tag ='column'
+			-- elements[a].tag ='column'
 			-- elements[a]:addEventListener("touch", addDragMove)
 			if(elements[a].x < display.contentCenterX - 170) then
 				if elements[a].scoreAdded == false then
@@ -164,7 +170,7 @@ function moveColumns()
 
 				if (elements[a].newColumnCreated == false) then
 					if ((mydata.score % 2 == 0) and (distanceHelper > 50)) then
-						distanceHelper = distanceHelper - 5
+						distanceHelper = distanceHelper - 50
 						print(distanceHelper..'____distanceHelper')
 					end
 					addColumns()
@@ -206,11 +212,15 @@ function addDragMove(event)
 			event.target.y = 920
 		elseif (event.target.y < 105) then 
 			event.target.y = 105
-		else 
+		else
 			local y = (event.y - markY)
 			event.target.y = event.target.y + y
 			markY = event.y
-					
+			if (event.target.type == "extra") then
+				if (corn.isVisible ) then
+					corn.y = corn.y + y
+				end
+			end
 				
 		end
 	end
@@ -224,6 +234,7 @@ function addColumns()
 	height = 500
 	local physicsData = (require "column").physicsData(scaleFactor)
 	column = display.newImageRect('column.png',100,1914)
+
 	column.anchorX = 0.5
 	column.anchorY = 0.5
 	column.x = display.contentWidth + 100
@@ -232,11 +243,29 @@ function addColumns()
 	column.added = false
 	column.scoreAdded = false
 	column.newColumnCreated = false
-	-- physics.addBody(column, "kinematic", {density=1, bounce=0.1, friction=.2})
-	
 	physics.addBody( column, "kinematic", physicsData:get("column3") )
 	column:addEventListener("touch", addDragMove)
 	elements:insert(column)
+	if (mydata.score % 3 == 0) then
+		specialColumn = display.newImageRect('bottomColumn.png',100,714)
+		specialColumn.type = 'extra'
+		specialColumn.anchorX = 0.5
+		specialColumn.anchorY = 0
+		specialColumn.x = display.contentWidth + 400
+		specialColumn.y = height + 360
+		specialColumn.tag = 'column'
+		corn = display.newImageRect('corn.png',70,75)
+		corn.anchorX = 0.5
+		corn.anchorY = 0.5
+		corn.x = display.contentWidth + 400
+		corn.y = height + 240
+		corn.tag = 'corn'
+		physics.addBody( specialColumn, "kinematic", physicsData:get("bottomColumn") )
+		physics.addBody( corn, "kinematic", physicsData:get("corn") )
+		specialColumn:addEventListener("touch", addDragMove)
+		elements:insert(specialColumn)
+		elements:insert(corn)
+	end
 
 end	
 
@@ -262,9 +291,7 @@ function scene:enterScene(event)
 	memTimer = timer.performWithDelay( 1000, checkMemory, 0 )
 
 end
-function payerPos()
-	-- print(player.y..'____yyyyy')
-end
+
 function scene:exitScene(event)
 
 	bg:removeEventListener("touch", start)

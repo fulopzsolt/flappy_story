@@ -5,10 +5,10 @@ local storyboard = require ("storyboard")
 local scene = storyboard.newScene()
 local mydata = require( "mydata" )
 local score = require( "score" )
-
-----------------------------------
-----------------------------------
--- ----AD-------------------------
+-----------------------------
+-----------------------------
+-----------------------------
+-----------------------------
 function displayAd()
 	-- Hide the status bar
 	display.setStatusBar( display.HiddenStatusBar )
@@ -51,10 +51,12 @@ function displayAd()
 			statusText.x = display.contentWidth * 0.5
 
 			showAd( "banner" )
+			return false
 		else
 			statusText:setFillColor( 0, 255, 0 )
 			statusText.text = "Successfully Loaded Ad"
 			statusText.x = display.contentWidth * 0.5
+			return false
 		end
 	end
 
@@ -82,34 +84,35 @@ function displayAd()
 
 	-- if on simulator, let user know they must build for device
 	if sysEnv == "simulator" then
-		local font, size = native.systemFontBold, 22
-		local warningText = display.newText( "Please build for device or Xcode simulator to test this sample.", 0, 0, 290, 300, font, size )
-		warningText:setFillColor( 255 )
-		-- warningText:setReferencePoint( display.CenterReferencePoint )
-		warningText.x, warningText.y = display.contentWidth * 0.5, display.contentHeight * 0.5
+		-- local font, size = native.systemFontBold, 22
+		-- local warningText = display.newText( "Please build for device or Xcode simulator to test this sample.", 0, 0, 290, 300, font, size )
+		-- warningText:setFillColor( 255 )
+		-- -- warningText:setReferencePoint( display.CenterReferencePoint )
+		-- warningText.x, warningText.y = display.contentWidth * 0.5, display.contentHeight * 0.5
 	else
 		-- start with banner ad
-		showAd( "interstitial" )
+		-- showAd( "interstitial" )
+		showAd( "banner" )
 	end
 
 end
-
--- ----AD-------------------------
-----------------------------------
-----------------------------------
-
+-----------------------------
+-----------------------------
+-----------------------------
+-----------------------------
 -- background
 
 function restartGame(event)
-     if event.phase == "ended" then
-     	displayAd()
-		saveScore()
 
+	if event.phase == "ended" then
+
+		saveScore()
 		storyboard.gotoScene("start")
-     end
+	end
 end
 
 function showStart()
+	displayAd()
 	startTransition = transition.to(restart,{time=200, alpha=1})
 	scoreTextTransition = transition.to(scoreText,{time=600, alpha=1})
 	scoreTextTransition = transition.to(bestText,{time=600, alpha=1})
@@ -230,3 +233,16 @@ scene:addEventListener("exitScene", scene)
 scene:addEventListener("destroyScene", scene)
 
 return scene
+
+
+
+
+
+
+
+
+
+
+
+
+
