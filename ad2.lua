@@ -5,18 +5,114 @@ local storyboard = require ("storyboard")
 local scene = storyboard.newScene()
 local mydata = require( "mydata" )
 local score = require( "score" )
+-----------------------------
+-----------------------------
+-----------------------------
+-----------------------------
+function displayAd()
+	-- Hide the status bar
+	display.setStatusBar( display.HiddenStatusBar )
 
+	-- The name of the ad provider.
+	local provider = "admob"
+
+	-- Your application ID
+	local appID = "ca-app-pub-4047264809121768/6483277533"
+
+	-- Load Corona 'ads' library
+	local ads = require "ads"
+
+	--------------------------------------------------------------------------------
+	-- Setup ad provider
+	--------------------------------------------------------------------------------
+
+	-- Create a text object to display ad status
+	local statusText = display.newText( "", 0, 0, native.systemFontBold, 22 )
+	statusText:setFillColor( 255 )
+	-- statusText:setReferencePoint( display.CenterReferencePoint )
+	statusText.x, statusText.y = display.contentWidth * 0.5, 160
+
+	local showAd
+
+	-- Set up ad listener.
+	local function adListener( event )
+		-- event table includes:
+		-- 		event.provider
+		--		event.isError (e.g. true/false )
+		
+		local msg = event.response
+
+		-- just a quick debug message to check what response we got from the library
+		print("Message received from the ads library: ", msg)
+
+		if event.isError then
+			statusText:setFillColor( 255, 0, 0 )
+			statusText.text = "Error Loading Ad"
+			statusText.x = display.contentWidth * 0.5
+
+			showAd( "banner" )
+			return false
+		else
+			statusText:setFillColor( 0, 255, 0 )
+			statusText.text = "Successfully Loaded Ad"
+			statusText.x = display.contentWidth * 0.5
+			return false
+		end
+	end
+
+	-- Initialize the 'ads' library with the provider you wish to use.
+	if appID then
+		ads.init( provider, appID )
+	end
+
+	--------------------------------------------------------------------------------
+	-- UI
+	--------------------------------------------------------------------------------
+
+	-- initial variables
+	local sysModel = system.getInfo("model")
+	local sysEnv = system.getInfo("environment")
+
+	statusText:toFront()
+
+	-- Shows a specific type of ad
+	showAd = function( adType )
+		local adX, adY = display.screenOriginX, display.screenOriginY
+		statusText.text = ""
+		ads.show( adType, { x=adX, y=adY } )
+	end
+
+	-- if on simulator, let user know they must build for device
+	if sysEnv == "simulator" then
+		-- local font, size = native.systemFontBold, 22
+		-- local warningText = display.newText( "Please build for device or Xcode simulator to test this sample.", 0, 0, 290, 300, font, size )
+		-- warningText:setFillColor( 255 )
+		-- -- warningText:setReferencePoint( display.CenterReferencePoint )
+		-- warningText.x, warningText.y = display.contentWidth * 0.5, display.contentHeight * 0.5
+	else
+		-- start with banner ad
+		-- showAd( "interstitial" )
+		showAd( "banner" )
+	end
+
+end
+-----------------------------
+-----------------------------
+-----------------------------
+-----------------------------
 -- background
 
 function restartGame(event)
-     if event.phase == "ended" then
-     	-- myfb()
+
+	if event.phase == "ended" then
+
 		saveScore()
 		storyboard.gotoScene("start")
-     end
+	end
 end
 
 function showStart()
+	displayAd()
 	startTransition = transition.to(restart,{time=200, alpha=1})
 	scoreTextTransition = transition.to(scoreText,{time=600, alpha=1})
 	scoreTextTransition = transition.to(bestText,{time=600, alpha=1})

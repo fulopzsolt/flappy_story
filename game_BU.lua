@@ -261,6 +261,7 @@ function addColumns()
 	column.x = display.contentWidth + 100
 	column.y = height - 160
 	column.tag = 'column'
+<<<<<<< HEAD
 	
 	colBack = display.newImageRect('colBack.png',200,1914)
 	colBack.anchorX = 0.5
@@ -268,7 +269,7 @@ function addColumns()
 	colBack.x = display.contentWidth + 100
 	colBack.y = height - 160
 	colBack.tag = 'colBack'
-	colBack.alpha = 0.5
+	colBack.alpha = 0.01
 	
 	colBack.added = false
 	colBack.scoreAdded = false
@@ -280,48 +281,34 @@ function addColumns()
 	--column:addEventListener("touch", addDragMove)
 	elements:insert(colBack)
 	pipes:insert(column)
-	print(mydata.score)
---[[	if (mydata.score % 3 == 0) and (mydata.score ~=0) then
-	
+=======
+	column.added = false
+	column.scoreAdded = false
+	column.newColumnCreated = false
+	physics.addBody( column, "kinematic", physicsData:get("column3") )
+	column:addEventListener("touch", addDragMove)
+	elements:insert(column)
+	if (mydata.score % 3 == 0) then
 		specialColumn = display.newImageRect('bottomColumn.png',100,714)
 		specialColumn.type = 'extra'
 		specialColumn.anchorX = 0.5
 		specialColumn.anchorY = 0
 		specialColumn.x = display.contentWidth + 400
-		specialColumn.y = height + 560
+		specialColumn.y = height + 360
 		specialColumn.tag = 'column'
-		
 		corn = display.newImageRect('corn.png',70,75)
 		corn.anchorX = 0.5
 		corn.anchorY = 0.5
 		corn.x = display.contentWidth + 400
 		corn.y = height + 240
 		corn.tag = 'corn'
-		
 		physics.addBody( specialColumn, "kinematic", physicsData:get("bottomColumn") )
 		physics.addBody( corn, "kinematic", physicsData:get("corn") )
-		--specialColumn:addEventListener("touch", addDragMove)
-		specialColBack = display.newImageRect('colBack.png',200,1914)
-	specialColBack.anchorX = 0.5
-	specialColBack.anchorY = 0.5
-	specialColBack.x = display.contentWidth + 100
-	specialColBack.y = height - 160
-	specialColBack.tag = 'specialColBack'
-	specialColBack.alpha = 0.5
-	
-	specialColBack.added = false
-	specialColBack.scoreAdded = false
-	specialColBack.newspecialColumnCreated = false
-	-- physics.addBody(specialColumn, "kinematic", {density=1, bounce=0.1, friction=.2})
-	
-	--addBody( specialColumn, "kinematic", physicsData:get("specialColumn3") )
-	specialColBack:addEventListener("touch", addDragMove)
-	--specialColumn:addEventListener("touch", addDragMove)
-	elements:insert(specialColBack)
-	pipes:insert(specialColumn)
-		--elements:insert(specialColumn)
-		--elements:insert(corn)
-	end]]--
+		specialColumn:addEventListener("touch", addDragMove)
+		elements:insert(specialColumn)
+		elements:insert(corn)
+	end
+>>>>>>> 4b8aad129a09af39e80b3a18f236e3e271d9b2d2
 
 end	
 
