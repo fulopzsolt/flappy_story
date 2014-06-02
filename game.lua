@@ -10,7 +10,7 @@ local scene = storyboard.newScene()
 mydata.score = 0
 
 function scene:createScene(event)
-	-- physics.setDrawMode("hybrid")
+	physics.setDrawMode("hybrid")
 	local screenGroup = self.view
 
     bg = display.newImageRect('bg2.png',1200,1425)
@@ -70,7 +70,9 @@ function scene:createScene(event)
 	player.anchorY = 0.5
 	player.x = display.contentCenterX - 150
 	player.y = display.contentCenterY
+	
 	physics.addBody(player, "static", {density=10, bounce=0, friction=0})
+	player.isFixedRotation = true
 	-- local physicsData = (require "bat").physicsData(scaleFactor)
 	-- physics.addBody( player, "static", physicsData:get("bat") )
 	player:applyForce(0, -300, player.x, player.y)
@@ -99,8 +101,8 @@ function onCollision( event )
 			event.object2:removeSelf()
 			event.object2 = nil
 		else
-			storyboard.gotoScene( "ad2" )
-			-- storyboard.gotoScene( "restart" )	
+			-- storyboard.gotoScene( "ad2" )
+			storyboard.gotoScene( "restart" )	
 		end
 	end
 end
@@ -233,7 +235,7 @@ function addColumns()
 
 	height = 500
 	local physicsData = (require "column").physicsData(scaleFactor)
-	column = display.newImageRect('column.png',100,1914)
+	column = display.newImageRect('column3.png',216,1634)
 
 	column.anchorX = 0.5
 	column.anchorY = 0.5
@@ -261,7 +263,7 @@ function addColumns()
 		corn.y = height + 240
 		corn.tag = 'corn'
 		physics.addBody( specialColumn, "kinematic", physicsData:get("bottomColumn") )
-		physics.addBody( corn, "kinematic", physicsData:get("corn") )
+		physics.addBody( corn, "static", physicsData:get("corn") )
 		specialColumn:addEventListener("touch", addDragMove)
 		elements:insert(specialColumn)
 		elements:insert(corn)
