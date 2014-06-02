@@ -5,7 +5,7 @@ local storyboard = require ("storyboard")
 local scene = storyboard.newScene()
 local mydata = require( "mydata" )
 local score = require( "score" )
-
+--[[
 ------------------------------
 ------------------------------
 -----------facebook-----------
@@ -49,7 +49,7 @@ facebook.login( fbAppID, fbListener, { "publish_action" } )
 ------------------------------
 -----------facebook-----------
 ------------------------------
-------------------------------
+------------------------------]]--
 -- background
 
 function restartGame(event)

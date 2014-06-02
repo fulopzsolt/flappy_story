@@ -10,7 +10,7 @@ local scene = storyboard.newScene()
 mydata.score = 0
 
 function scene:createScene(event)
-	 --physics.setDrawMode("hybrid")
+	-- physics.setDrawMode("hybrid")
 	local screenGroup = self.view
 
     bg = display.newImageRect('bg2.png',1200,1425)
@@ -28,6 +28,10 @@ function scene:createScene(event)
 	elements.x = 0
 	elements.y = 0
 	screenGroup:insert(elements)
+	
+	pipes = display.newGroup()
+	screenGroup:insert(pipes)
+	
 
 	ground = display.newImageRect('ground.png',900,162)
 	ground.anchorX = 0
@@ -147,6 +151,18 @@ function flyTheBird()
 		end
 end
 
+function follow()
+
+	for a = 1,3 do
+	if pipes[a]~=nil then
+	pipes[a].y=elements[a].y
+	end
+	end
+	
+	end
+
+	
+
 local distanceHelper = 170
 function moveColumns()
 		for a = elements.numChildren,1,-1  do
@@ -165,8 +181,9 @@ function moveColumns()
 				if (elements[a].newColumnCreated == false) then
 					if ((mydata.score % 2 == 0) and (distanceHelper > 50)) then
 						distanceHelper = distanceHelper - 5
-						print(distanceHelper..'____distanceHelper')
+			
 					end
+					
 					addColumns()
 					elements[a].newColumnCreated = true
 				end
@@ -183,11 +200,14 @@ function moveColumns()
 			
 			if(elements[a].x > -300) then
 				elements[a].x = elements[a].x - 5
+				pipes[a].x = pipes[a].x - 5
 			else 
 				elements[a]:removeEventListener("touch", addDragMove)
 				
 				elements[a]:removeSelf()
 				elements[a] = nil
+				pipes[a]:removeSelf()
+				pipes[a] = nil
 				-- elements:remove(elements[a])
 				
 			end	
@@ -197,25 +217,25 @@ function moveColumns()
 end
 
 function addDragMove(event)
-	
 	if event.phase == "began" then
 	    markY = event.y	
 	return false
 	else
-		if (event.target.y > 920) then	
-			event.target.y = 920
-		elseif (event.target.y < 105) then 
-			event.target.y = 105
+		if (event.target.y > 900) then	
+			event.target.y = 900
+			
+		elseif (event.target.y < 120) then 
+			event.target.y = 120
+			--pipes.y = event.y
 		else 
 			local y = (event.y - markY)
 			event.target.y = event.target.y + y
-			markY = event.y
-					
-				
+			markY = event.y	
+			--pipes.y = event.target.y
 		end
 	end
+	--pipes.y = event.target.y
 	return true
-
 end
 
 function addColumns()
@@ -229,14 +249,25 @@ function addColumns()
 	column.x = display.contentWidth + 100
 	column.y = height - 160
 	column.tag = 'column'
-	column.added = false
-	column.scoreAdded = false
-	column.newColumnCreated = false
+	
+	colBack = display.newImageRect('colBack.png',200,1914)
+	colBack.anchorX = 0.5
+	colBack.anchorY = 0.5
+	colBack.x = display.contentWidth + 100
+	colBack.y = height - 160
+	colBack.tag = 'colBack'
+	colBack.alpha = 0.01
+	
+	colBack.added = false
+	colBack.scoreAdded = false
+	colBack.newColumnCreated = false
 	-- physics.addBody(column, "kinematic", {density=1, bounce=0.1, friction=.2})
 	
 	physics.addBody( column, "kinematic", physicsData:get("column3") )
-	column:addEventListener("touch", addDragMove)
-	elements:insert(column)
+	colBack:addEventListener("touch", addDragMove)
+	--column:addEventListener("touch", addDragMove)
+	elements:insert(colBack)
+	pipes:insert(column)
 
 end	
 
@@ -251,6 +282,7 @@ function scene:enterScene(event)
 	
 	storyboard.removeScene("start")
 	bg:addEventListener("touch", start)
+	Runtime:addEventListener("enterFrame", follow)
 
 	platform.enterFrame = platformScroller
 	Runtime:addEventListener("enterFrame", platform)
@@ -271,6 +303,7 @@ function scene:exitScene(event)
 	Runtime:removeEventListener("enterFrame", platform)
 	Runtime:removeEventListener("enterFrame", platform2)
 	Runtime:removeEventListener("collision", onCollision)
+	Runtime:removeEventListener("enterFrame", follow)
 	timer.cancel(flyTheBirdTimer)
 	timer.cancel(moveColumnTimer)
 	timer.cancel(memTimer)
