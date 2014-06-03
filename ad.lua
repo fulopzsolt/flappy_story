@@ -82,11 +82,11 @@ function displayAd()
 
 	-- if on simulator, let user know they must build for device
 	if sysEnv == "simulator" then
-		local font, size = native.systemFontBold, 22
-		local warningText = display.newText( "Please build for device or Xcode simulator to test this sample.", 0, 0, 290, 300, font, size )
-		warningText:setFillColor( 255 )
-		-- warningText:setReferencePoint( display.CenterReferencePoint )
-		warningText.x, warningText.y = display.contentWidth * 0.5, display.contentHeight * 0.5
+		-- local font, size = native.systemFontBold, 22
+		-- local warningText = display.newText( "Please build for device or Xcode simulator to test this sample.", 0, 0, 290, 300, font, size )
+		-- warningText:setFillColor( 255 )
+		-- -- warningText:setReferencePoint( display.CenterReferencePoint )
+		-- warningText.x, warningText.y = display.contentWidth * 0.5, display.contentHeight * 0.5
 	else
 		-- start with banner ad
 		showAd( "interstitial" )
@@ -102,7 +102,7 @@ end
 
 function restartGame(event)
      if event.phase == "ended" then
-     	displayAd()
+     	
 		saveScore()
 
 		storyboard.gotoScene("start")
@@ -208,6 +208,7 @@ function scene:enterScene(event)
 	storyboard.removeScene("game")
 	restart:addEventListener("touch", restartGame)
 	showGameOver()
+	displayAd()
 	loadScore()
 end
 

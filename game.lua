@@ -101,8 +101,9 @@ function onCollision( event )
 			event.object2:removeSelf()
 			event.object2 = nil
 		else
-			-- storyboard.gotoScene( "ad2" )
-			storyboard.gotoScene( "restart" )	
+			storyboard.gotoScene( "ad" )
+			-- storyboard.gotoScene( "restart" )	
+			-- storyboard.gotoScene( "displayAd" )
 		end
 	end
 end

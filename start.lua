@@ -120,7 +120,7 @@ end
 
 function scene:enterScene(event)
 
-	storyboard.removeScene("restart")
+	storyboard.removeScene("ad")
 	start:addEventListener("touch", startGame)
 	platform.enterFrame = groundScroller
 	Runtime:addEventListener("enterFrame", platform)
