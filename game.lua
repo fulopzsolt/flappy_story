@@ -159,6 +159,7 @@ end
 local distanceHelper = 170
 function moveColumns()
 		for a = elements.numChildren,1,-1  do
+			elements[a]:addEventListener( "touch", doTouch )
 			-- elements[a].tag ='column'
 			-- elements[a]:addEventListener("touch", addDragMove)
 			if(elements[a].x < display.contentCenterX - 170) then
@@ -174,7 +175,6 @@ function moveColumns()
 				if (elements[a].newColumnCreated == false) then
 					if ((mydata.score % 2 == 0) and (distanceHelper > 50)) then
 						distanceHelper = distanceHelper - 50
-						print(distanceHelper..'____distanceHelper')
 					end
 					addColumns()
 					elements[a].newColumnCreated = true
@@ -230,13 +230,21 @@ function addDragMove(event)
 	return true
 
 end
-
+function doTouch( event )
+    if ( event.phase == "began" ) then      
+        event.target.alpha = 1
+        display.getCurrentStage():setFocus( event.target )
+    elseif event.phase == "ended" or event.phase == "cancelled" then
+        event.target.alpha = 1
+        display.getCurrentStage():setFocus(nil)
+    end
+end
 function addColumns()
 	
 
 	height = 500
 	local physicsData = (require "column").physicsData(scaleFactor)
-	column = display.newImageRect('column3.png',216,1634)
+	column = display.newImageRect('column.png',101,1584)
 
 	column.anchorX = 0.5
 	column.anchorY = 0.5
@@ -246,8 +254,9 @@ function addColumns()
 	column.added = false
 	column.scoreAdded = false
 	column.newColumnCreated = false
-	physics.addBody( column, "kinematic", physicsData:get("column3") )
+	physics.addBody( column, "kinematic", physicsData:get("column") )
 	column:addEventListener("touch", addDragMove)
+
 	elements:insert(column)
 	if (mydata.score % 3 == 0) then
 		specialColumn = display.newImageRect('bottomColumn.png',100,714)
