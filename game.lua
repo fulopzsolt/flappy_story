@@ -10,7 +10,7 @@ local scene = storyboard.newScene()
 mydata.score = 0
 
 function scene:createScene(event)
-	physics.setDrawMode("hybrid")
+	-- physics.setDrawMode("hybrid")
 	local screenGroup = self.view
 
     bg = display.newImageRect('bg2.png',1200,1425)
@@ -80,7 +80,7 @@ function scene:createScene(event)
 	screenGroup:insert(player)
 	
 	scoreText = display.newText(mydata.score,display.contentCenterX,
-	150, "pixelmix", 58)
+	150, "Arial", 58)
 	scoreText:setFillColor(0,0,0)
 	scoreText.alpha = 0
 	screenGroup:insert(scoreText)
@@ -94,17 +94,30 @@ function scene:createScene(event)
 	
 end
 
-
-function onCollision( event )
+function onCornCollision( self, event )
+	-- body
 	if ( event.phase == "began" ) then
-		if (event.object2.tag == "corn") then
-			event.object2:removeSelf()
-			event.object2 = nil
-		else
-			storyboard.gotoScene( "ad" )
-			-- storyboard.gotoScene( "restart" )	
-			-- storyboard.gotoScene( "displayAd" )
-		end
+		self:removeSelf()
+		self.object2 = nil
+	end
+end
+function onCollision( self, event )
+	if ( event.phase == "began" ) then
+		storyboard.gotoScene( "ad" )
+		-- print(event.object2.tag.."   ____collision with")
+		-- if (event.object2.tag == "corn") then
+		-- 	event.object2:removeSelf()
+		-- 	event.object2 = nil
+		-- 	-- event.object2.alpha = 0
+		-- elseif (event.object1.tag == "corn") then
+		-- 	event.object1:removeSelf()
+		-- 	event.object1 = nil
+		-- 	-- event.object2.alpha = 0
+		-- else
+		-- 	storyboard.gotoScene( "ad" )
+		-- 	-- storyboard.gotoScene( "restart" )	
+		-- 	-- storyboard.gotoScene( "displayAd" )
+		-- end
 	end
 end
 
@@ -130,10 +143,66 @@ end
 
 local gameStarted = false
 local nextHeight = getNextHeight()
+function displayAd()
+	display.setStatusBar( display.HiddenStatusBar )
+	local provider = "admob"
+	local appID = "ca-app-pub-4047264809121768/2045757936"
+	local ads = require "ads"
+	local statusText = display.newText( "", 0, 0, native.systemFontBold, 22 )
+	statusText:setFillColor( 255 )
+	statusText.x, statusText.y = display.contentWidth * 0.5, 160
+	local showAd
+	local function adListener( event )
+		local msg = event.response
+		print("Message received from the ads library: ", msg)
 
+		if event.isError then
+			statusText:setFillColor( 255, 0, 0 )
+			statusText.text = "Error Loading Ad"
+			statusText.x = display.contentWidth * 0.5
+			showAd( "banner" )
+		else
+			statusText:setFillColor( 0, 255, 0 )
+			statusText.text = "Successfully Loaded Ad"
+			statusText.x = display.contentWidth * 0.5
+		end
+	end
+
+	if appID then
+		ads.init( provider, appID )
+	end
+
+	local sysModel = system.getInfo("model")
+	local sysEnv = system.getInfo("environment")
+
+	statusText:toFront()
+
+	showAd = function( adType )
+		local adX, adY = display.screenOriginX, display.screenOriginY + 200
+		statusText.text = ""
+		ads.show( adType, { x=adX, y=adY } )
+	end
+
+	if sysEnv == "simulator" then
+		-- local font, size = native.systemFontBold, 22
+		-- local warningText = display.newText( "Please build for device or Xcode simulator to test this sample.", 0, 0, 290, 300, font, size )
+		-- warningText:setFillColor( 255 )
+		-- -- warningText:setReferencePoint( display.CenterReferencePoint )
+		-- warningText.x, warningText.y = display.contentWidth * 0.5, display.contentHeight * 0.5
+	else
+		-- start with banner ad
+		-- showAd( "interstitial" )
+		showAd( "banner" )
+	end
+
+end
 function start(event)
    
-		if gameStarted == false then
+		if (gameStarted == false) then
+			-- if (mydata.bannerShowed == false) then
+			-- 	displayAd()
+			-- 	mydata.bannerShowed = true
+			-- end
 			player.bodyType = "dynamic"
 			instructions.alpha = 0
 			scoreText.alpha = 1
@@ -142,6 +211,7 @@ function start(event)
 
 		 	flyTheBirdTimer = timer.performWithDelay(100, flyTheBird, -1)
 			gameStarted = true
+			
 			--player:applyForce(0, -300, player.x, player.y)
 		end
 
@@ -164,7 +234,7 @@ function moveColumns()
 			-- elements[a]:addEventListener("touch", addDragMove)
 			if(elements[a].x < display.contentCenterX - 170) then
 				if elements[a].scoreAdded == false then
-					
+					print((mydata.score + 1)..'------ '..elements[a].tag..'  ------')
 					mydata.score = mydata.score + 1
 					scoreText.text = mydata.score
 					elements[a].scoreAdded = true
@@ -174,7 +244,7 @@ function moveColumns()
 
 				if (elements[a].newColumnCreated == false) then
 					if ((mydata.score % 2 == 0) and (distanceHelper > 50)) then
-						distanceHelper = distanceHelper - 50
+						-- distanceHelper = distanceHelper - 50
 					end
 					addColumns()
 					elements[a].newColumnCreated = true
@@ -190,11 +260,13 @@ function moveColumns()
 				
 			end
 			
-			if(elements[a].x > -300) then
+			if(elements[a].x > -100) then
 				elements[a].x = elements[a].x - 5
 			else 
+				-- print(elements[a].tag.."________-")
 				elements[a]:removeEventListener("touch", addDragMove)
-				
+				elements[a]:removeEventListener("collision", elements[a])
+				elements[a]:removeEventListener("touch", doTouch)
 				elements[a]:removeSelf()
 				elements[a] = nil
 				-- elements:remove(elements[a])
@@ -232,20 +304,30 @@ function addDragMove(event)
 end
 function doTouch( event )
     if ( event.phase == "began" ) then      
-        event.target.alpha = 1
+        event.target.alpha = 0.7
         display.getCurrentStage():setFocus( event.target )
     elseif event.phase == "ended" or event.phase == "cancelled" then
         event.target.alpha = 1
         display.getCurrentStage():setFocus(nil)
     end
 end
+function testListener(event, obj)
+		if (event.phase == 'began') then
+			print('in')
+		end
+	end
 function addColumns()
 	
 
 	height = 500
 	local physicsData = (require "column").physicsData(scaleFactor)
-	column = display.newImageRect('column.png',101,1584)
-
+	if (mydata.score % 2 == 0) then
+		column = display.newImageRect('greekColumn.png',124,1800)
+		physics.addBody( column, "kinematic", physicsData:get("column") )
+	else
+		column = display.newImageRect('greekColumn2.png',71,1800)
+		physics.addBody( column, "kinematic", physicsData:get("column") )
+	end
 	column.anchorX = 0.5
 	column.anchorY = 0.5
 	column.x = display.contentWidth + 100
@@ -254,26 +336,36 @@ function addColumns()
 	column.added = false
 	column.scoreAdded = false
 	column.newColumnCreated = false
-	physics.addBody( column, "kinematic", physicsData:get("column") )
+	column.collision = onCollision
+	column:addEventListener( "collision", column )
 	column:addEventListener("touch", addDragMove)
-
 	elements:insert(column)
-	if (mydata.score % 3 == 0) then
-		specialColumn = display.newImageRect('bottomColumn.png',100,714)
+	
+	
+	if (mydata.score % 4 == 0) then
+		specialColumn = display.newImageRect('bottomColumn.png',127,936)
 		specialColumn.type = 'extra'
 		specialColumn.anchorX = 0.5
 		specialColumn.anchorY = 0
 		specialColumn.x = display.contentWidth + 400
 		specialColumn.y = height + 360
 		specialColumn.tag = 'column'
+		specialColumn.scoreAdded = false
+		specialColumn.collision = onCollision
+		specialColumn:addEventListener( "collision", specialColumn )
 		corn = display.newImageRect('corn.png',70,75)
 		corn.anchorX = 0.5
 		corn.anchorY = 0.5
 		corn.x = display.contentWidth + 400
 		corn.y = height + 240
 		corn.tag = 'corn'
+		corn.type = 'extra'
+		corn.collision = onCornCollision
+		corn:addEventListener( "collision", corn )
+		print(corn.tag..'__megvagyok')
+		specialColumn.scoreAdded = false
 		physics.addBody( specialColumn, "kinematic", physicsData:get("bottomColumn") )
-		physics.addBody( corn, "static", physicsData:get("corn") )
+		physics.addBody( corn, "static", {density = 2, friction = 0, bounce = 0} ) --physicsData:get("corn")
 		specialColumn:addEventListener("touch", addDragMove)
 		elements:insert(specialColumn)
 		elements:insert(corn)
@@ -284,12 +376,13 @@ end
 local function checkMemory()
    collectgarbage( "collect" )
    local memUsage_str = string.format( "MEMORY = %.3f KB", collectgarbage( "count" ) )
-   print( memUsage_str, "TEXTURE = "..(system.getInfo("textureMemoryUsed") / (1024 * 1024) ) )
+   -- print( memUsage_str, "TEXTURE = "..(system.getInfo("textureMemoryUsed") / (1024 * 1024) ) )
 end
 
 
 function scene:enterScene(event)
-	
+	collectgarbage( "collect" )
+	collectgarbage( "restart" )
 	storyboard.removeScene("start")
 	bg:addEventListener("touch", start)
 
@@ -299,7 +392,7 @@ function scene:enterScene(event)
 	platform2.enterFrame = platformScroller
 	Runtime:addEventListener("enterFrame", platform2)
     
-    Runtime:addEventListener("collision", onCollision)
+    -- Runtime:addEventListener("collision", onCollision)
 	memTimer = timer.performWithDelay( 1000, checkMemory, 0 )
 
 end
@@ -309,7 +402,7 @@ function scene:exitScene(event)
 	bg:removeEventListener("touch", start)
 	Runtime:removeEventListener("enterFrame", platform)
 	Runtime:removeEventListener("enterFrame", platform2)
-	Runtime:removeEventListener("collision", onCollision)
+	-- Runtime:removeEventListener("collision", onCollision)
 	timer.cancel(flyTheBirdTimer)
 	timer.cancel(moveColumnTimer)
 	timer.cancel(memTimer)

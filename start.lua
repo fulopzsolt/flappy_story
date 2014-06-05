@@ -45,7 +45,7 @@ function scene:createScene(event)
 
 	local screenGroup = self.view
 
-	background = display.newImageRect("bg.png",900,1425)
+	background = display.newImageRect("bg2.png",900,1425)
 	background.anchorX = 0.5
 	background.anchorY = 1
 	background.x = display.contentCenterX
@@ -77,7 +77,7 @@ function scene:createScene(event)
 	platform2.speed = 4
 	screenGroup:insert(platform2)
 	
-	start = display.newImageRect("start_btn.png",300,65)
+	start = display.newImageRect("start_btn.png",356,204)
 	start.anchorX = 0.5
 	start.anchorY = 1
 	start.x = display.contentCenterX
