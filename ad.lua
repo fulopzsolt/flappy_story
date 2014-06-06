@@ -10,82 +10,87 @@ local score = require( "score" )
 ----------------------------------
 -- ----AD-------------------------
 function displayAd()
-	-- Hide the status bar
-	display.setStatusBar( display.HiddenStatusBar )
+	-- -- Hide the status bar
+	-- display.setStatusBar( display.HiddenStatusBar )
 
-	-- The name of the ad provider.
-	local provider = "admob"
+	-- -- The name of the ad provider.
+	-- local provider = "admob"
 
-	-- Your application ID
-	local appID = "ca-app-pub-4047264809121768/6483277533"
+	-- -- Your application ID
+	-- local appID = "ca-app-pub-4047264809121768/6483277533"
 
-	-- Load Corona 'ads' library
-	local ads = require "ads"
+	-- -- Load Corona 'ads' library
+	-- local ads = require "ads"
 
-	--------------------------------------------------------------------------------
-	-- Setup ad provider
-	--------------------------------------------------------------------------------
+	-- --------------------------------------------------------------------------------
+	-- -- Setup ad provider
+	-- --------------------------------------------------------------------------------
 
-	-- Create a text object to display ad status
-	local statusText = display.newText( "", 0, 0, native.systemFontBold, 22 )
-	statusText:setFillColor( 255 )
-	-- statusText:setReferencePoint( display.CenterReferencePoint )
-	statusText.x, statusText.y = display.contentWidth * 0.5, 160
+	-- -- Create a text object to display ad status
+	-- local statusText = display.newText( "", 0, 0, native.systemFontBold, 22 )
+	-- statusText:setFillColor( 255 )
+	-- -- statusText:setReferencePoint( display.CenterReferencePoint )
+	-- statusText.x, statusText.y = display.contentWidth * 0.5, 160
 
-	local showAd
+	-- local showAd
 
-	-- Set up ad listener.
-	local function adListener( event )
-		local msg = event.response
-		print("Message received from the ads library: ", msg)
+	-- -- Set up ad listener.
+	-- local function adListener( event )
+	-- 	-- event table includes:
+	-- 	-- 		event.provider
+	-- 	--		event.isError (e.g. true/false )
+		
+	-- 	local msg = event.response
 
-		if event.isError then
-			statusText:setFillColor( 255, 0, 0 )
-			statusText.text = "Error Loading Ad"
-			statusText.x = display.contentWidth * 0.5
+	-- 	-- just a quick debug message to check what response we got from the library
+	-- 	print("Message received from the ads library: ", msg)
 
-			showAd( "banner" )
-		else
-			statusText:setFillColor( 0, 255, 0 )
-			statusText.text = "Successfully Loaded Ad"
-			statusText.x = display.contentWidth * 0.5
-		end
-	end
+	-- 	if event.isError then
+	-- 		statusText:setFillColor( 255, 0, 0 )
+	-- 		statusText.text = "Error Loading Ad"
+	-- 		statusText.x = display.contentWidth * 0.5
 
-	-- Initialize the 'ads' library with the provider you wish to use.
-	if appID then
-		ads.init( provider, appID )
-	end
+	-- 		showAd( "banner" )
+	-- 	else
+	-- 		statusText:setFillColor( 0, 255, 0 )
+	-- 		statusText.text = "Successfully Loaded Ad"
+	-- 		statusText.x = display.contentWidth * 0.5
+	-- 	end
+	-- end
 
-	--------------------------------------------------------------------------------
-	-- UI
-	--------------------------------------------------------------------------------
+	-- -- Initialize the 'ads' library with the provider you wish to use.
+	-- if appID then
+	-- 	ads.init( provider, appID )
+	-- end
 
-	-- initial variables
-	local sysModel = system.getInfo("model")
-	local sysEnv = system.getInfo("environment")
+	-- --------------------------------------------------------------------------------
+	-- -- UI
+	-- --------------------------------------------------------------------------------
 
-	statusText:toFront()
+	-- -- initial variables
+	-- local sysModel = system.getInfo("model")
+	-- local sysEnv = system.getInfo("environment")
 
-	-- Shows a specific type of ad
-	showAd = function( adType )
-		local adX, adY = display.screenOriginX, display.screenOriginY + 200
-		statusText.text = ""
-		ads.show( adType, { x=adX, y=adY } )
-	end
+	-- statusText:toFront()
 
-	-- if on simulator, let user know they must build for device
-	if sysEnv == "simulator" then
-		-- local font, size = native.systemFontBold, 22
-		-- local warningText = display.newText( "Please build for device or Xcode simulator to test this sample.", 0, 0, 290, 300, font, size )
-		-- warningText:setFillColor( 255 )
-		-- -- warningText:setReferencePoint( display.CenterReferencePoint )
-		-- warningText.x, warningText.y = display.contentWidth * 0.5, display.contentHeight * 0.5
-	else
-		-- start with banner ad
-		showAd( "interstitial" )
-		-- showAd( "banner" )
-	end
+	-- -- Shows a specific type of ad
+	-- showAd = function( adType )
+	-- 	local adX, adY = display.screenOriginX, display.screenOriginY
+	-- 	statusText.text = ""
+	-- 	ads.show( adType, { x=adX, y=adY } )
+	-- end
+
+	-- -- if on simulator, let user know they must build for device
+	-- if sysEnv == "simulator" then
+	-- 	-- local font, size = native.systemFontBold, 22
+	-- 	-- local warningText = display.newText( "Please build for device or Xcode simulator to test this sample.", 0, 0, 290, 300, font, size )
+	-- 	-- warningText:setFillColor( 255 )
+	-- 	-- -- warningText:setReferencePoint( display.CenterReferencePoint )
+	-- 	-- warningText.x, warningText.y = display.contentWidth * 0.5, display.contentHeight * 0.5
+	-- else
+	-- 	-- start with banner ad
+	-- 	showAd( "interstitial" )
+	-- end
 
 end
 
@@ -203,8 +208,9 @@ function scene:enterScene(event)
 	storyboard.removeScene("game")
 	restart:addEventListener("touch", restartGame)
 	showGameOver()
-	-- displayAd()
+	displayAd()
 	
+	loadScore()
 end
 
 function scene:exitScene(event)

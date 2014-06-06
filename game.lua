@@ -284,11 +284,17 @@ function addDragMove(event)
 	    markY = event.y	
 	return false
 	else
-		if (event.target.y > 920) then	
-			event.target.y = 920
-		elseif (event.target.y < 105) then 
-			event.target.y = 105
-		else
+
+		if (event.target.y > display.contentHeight - 163) then	
+			event.target.y = display.contentHeight - 163
+			if (event.target.type == "extra") then
+				if (corn.isVisible ) then
+					corn.y = display.contentHeight - 163 - 120
+				end
+			end
+		elseif (event.target.y < 5) then 
+			event.target.y = 5
+		elseif (event.y <= display.contentHeight - 170) then	
 			local y = (event.y - markY)
 			event.target.y = event.target.y + y
 			markY = event.y
@@ -377,7 +383,7 @@ end
 local function checkMemory()
    collectgarbage( "collect" )
    local memUsage_str = string.format( "MEMORY = %.3f KB", collectgarbage( "count" ) )
-   -- print( memUsage_str, "TEXTURE = "..(system.getInfo("textureMemoryUsed") / (1024 * 1024) ) )
+   print( memUsage_str, "TEXTURE = "..(system.getInfo("textureMemoryUsed") / (1024 * 1024) ) )
 end
 
 
@@ -399,7 +405,9 @@ function scene:enterScene(event)
 end
 
 function scene:exitScene(event)
-
+	for a = elements.numChildren,1,-1  do
+		elements[a]:removeEventListener("collision", elements[a])
+	end
 	bg:removeEventListener("touch", start)
 	Runtime:removeEventListener("enterFrame", platform)
 	Runtime:removeEventListener("enterFrame", platform2)
