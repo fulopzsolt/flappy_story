@@ -36,13 +36,7 @@ function displayAd()
 
 	-- Set up ad listener.
 	local function adListener( event )
-		-- event table includes:
-		-- 		event.provider
-		--		event.isError (e.g. true/false )
-		
 		local msg = event.response
-
-		-- just a quick debug message to check what response we got from the library
 		print("Message received from the ads library: ", msg)
 
 		if event.isError then
@@ -75,7 +69,7 @@ function displayAd()
 
 	-- Shows a specific type of ad
 	showAd = function( adType )
-		local adX, adY = display.screenOriginX, display.screenOriginY
+		local adX, adY = display.screenOriginX, display.screenOriginY + 200
 		statusText.text = ""
 		ads.show( adType, { x=adX, y=adY } )
 	end
@@ -90,6 +84,7 @@ function displayAd()
 	else
 		-- start with banner ad
 		showAd( "interstitial" )
+		-- showAd( "banner" )
 	end
 
 end
@@ -145,7 +140,7 @@ end
 function scene:createScene(event)
 
 	local screenGroup = self.view
-	background = display.newImageRect("bg.png",900,1425)
+	background = display.newImageRect("bg2.png",900,1425)
 	background.anchorX = 0.5
 	background.anchorY = 1
 	background.x = display.contentCenterX
@@ -173,11 +168,11 @@ function scene:createScene(event)
     scoreBg.y = display.contentHeight + 500
     screenGroup:insert(scoreBg)
 	
-	restart = display.newImageRect("start_btn.png",300,65)
+	restart = display.newImageRect("start_btn.png",356,204)
 	restart.anchorX = 0.5
 	restart.anchorY = 1
 	restart.x = display.contentCenterX
-	restart.y = display.contentCenterY + 400
+	restart.y = display.contentCenterY + 500
 	restart.alpha = 0
 	screenGroup:insert(restart)
 	
@@ -208,8 +203,8 @@ function scene:enterScene(event)
 	storyboard.removeScene("game")
 	restart:addEventListener("touch", restartGame)
 	showGameOver()
-	displayAd()
-	loadScore()
+	-- displayAd()
+	
 end
 
 function scene:exitScene(event)
