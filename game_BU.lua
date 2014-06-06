@@ -10,7 +10,7 @@ local scene = storyboard.newScene()
 mydata.score = 0
 
 function scene:createScene(event)
-	physics.setDrawMode("hybrid")
+	-- physics.setDrawMode("hybrid")
 	local screenGroup = self.view
 
     bg = display.newImageRect('bg2.png',1200,1425)
@@ -28,6 +28,10 @@ function scene:createScene(event)
 	elements.x = 0
 	elements.y = 0
 	screenGroup:insert(elements)
+	
+	pipes = display.newGroup()
+	screenGroup:insert(pipes)
+	
 
 	ground = display.newImageRect('ground.png',900,162)
 	ground.anchorX = 0
@@ -70,9 +74,7 @@ function scene:createScene(event)
 	player.anchorY = 0.5
 	player.x = display.contentCenterX - 150
 	player.y = display.contentCenterY
-	
 	physics.addBody(player, "static", {density=10, bounce=0, friction=0})
-	player.isFixedRotation = true
 	-- local physicsData = (require "bat").physicsData(scaleFactor)
 	-- physics.addBody( player, "static", physicsData:get("bat") )
 	player:applyForce(0, -300, player.x, player.y)
@@ -96,20 +98,15 @@ end
 
 
 function onCollision( event )
---	if ( event.phase == "began" ) then
-		print(event.object2.tag)
-		print(event.object2)
-		print(corn.tag)
-		if (event.object2.tag == "corn")  then
-		
+	if ( event.phase == "began" ) then
+		if (event.object2.tag == "corn") then
 			event.object2:removeSelf()
 			event.object2 = nil
 		else
-			storyboard.gotoScene( "ad" )
-			 --storyboard.gotoScene( "restart" )	
-			-- storyboard.gotoScene( "displayAd" )
+			storyboard.gotoScene( "ad2" )
+			-- storyboard.gotoScene( "restart" )	
 		end
---	end
+	end
 end
 
 function platformScroller(self,event)
@@ -160,10 +157,21 @@ function flyTheBird()
 		end
 end
 
+function follow()
+
+	for a = 1,3 do
+	if pipes[a]~=nil then
+	pipes[a].y=elements[a].y
+	end
+	end
+	
+	end
+
+	
+
 local distanceHelper = 170
 function moveColumns()
 		for a = elements.numChildren,1,-1  do
-			elements[a]:addEventListener( "touch", doTouch )
 			-- elements[a].tag ='column'
 			-- elements[a]:addEventListener("touch", addDragMove)
 			if(elements[a].x < display.contentCenterX - 170) then
@@ -178,8 +186,11 @@ function moveColumns()
 
 				if (elements[a].newColumnCreated == false) then
 					if ((mydata.score % 2 == 0) and (distanceHelper > 50)) then
-						distanceHelper = distanceHelper - 50
+
+						distanceHelper = distanceHelper - 5
+
 					end
+					
 					addColumns()
 					elements[a].newColumnCreated = true
 				end
@@ -196,11 +207,14 @@ function moveColumns()
 			
 			if(elements[a].x > -300) then
 				elements[a].x = elements[a].x - 5
+				pipes[a].x = pipes[a].x - 5
 			else 
 				elements[a]:removeEventListener("touch", addDragMove)
 				
 				elements[a]:removeSelf()
 				elements[a] = nil
+				pipes[a]:removeSelf()
+				pipes[a] = nil
 				-- elements:remove(elements[a])
 				
 			end	
@@ -210,15 +224,15 @@ function moveColumns()
 end
 
 function addDragMove(event)
-	
 	if event.phase == "began" then
 	    markY = event.y	
 	return false
 	else
-		if (event.target.y > 920) then	
-			event.target.y = 920
-		elseif (event.target.y < 105) then 
-			event.target.y = 105
+
+		if (event.target.y > 900) then	
+			event.target.y = 900
+		elseif (event.target.y < 120) then 
+			event.target.y = 120
 		else
 			local y = (event.y - markY)
 			event.target.y = event.target.y + y
@@ -231,36 +245,48 @@ function addDragMove(event)
 				
 		end
 	end
+	--pipes.y = event.target.y
 	return true
+end
 
-end
-function doTouch( event )
-    if ( event.phase == "began" ) then      
-        event.target.alpha = 1
-        display.getCurrentStage():setFocus( event.target )
-    elseif event.phase == "ended" or event.phase == "cancelled" then
-        event.target.alpha = 1
-        display.getCurrentStage():setFocus(nil)
-    end
-end
 function addColumns()
 	
 
 	height = 500
 	local physicsData = (require "column").physicsData(scaleFactor)
-	column = display.newImageRect('column.png',101,1584)
+	column = display.newImageRect('column.png',100,1914)
 
 	column.anchorX = 0.5
 	column.anchorY = 0.5
 	column.x = display.contentWidth + 100
 	column.y = height - 160
 	column.tag = 'column'
+<<<<<<< HEAD
+	
+	colBack = display.newImageRect('colBack.png',200,1914)
+	colBack.anchorX = 0.5
+	colBack.anchorY = 0.5
+	colBack.x = display.contentWidth + 100
+	colBack.y = height - 160
+	colBack.tag = 'colBack'
+	colBack.alpha = 0.01
+	
+	colBack.added = false
+	colBack.scoreAdded = false
+	colBack.newColumnCreated = false
+	-- physics.addBody(column, "kinematic", {density=1, bounce=0.1, friction=.2})
+	
+	physics.addBody( column, "kinematic", physicsData:get("column3") )
+	colBack:addEventListener("touch", addDragMove)
+	--column:addEventListener("touch", addDragMove)
+	elements:insert(colBack)
+	pipes:insert(column)
+=======
 	column.added = false
 	column.scoreAdded = false
 	column.newColumnCreated = false
-	physics.addBody( column, "kinematic", physicsData:get("column") )
+	physics.addBody( column, "kinematic", physicsData:get("column3") )
 	column:addEventListener("touch", addDragMove)
-
 	elements:insert(column)
 	if (mydata.score % 3 == 0) then
 		specialColumn = display.newImageRect('bottomColumn.png',100,714)
@@ -277,11 +303,12 @@ function addColumns()
 		corn.y = height + 240
 		corn.tag = 'corn'
 		physics.addBody( specialColumn, "kinematic", physicsData:get("bottomColumn") )
-		physics.addBody( corn, "static", physicsData:get("corn") )
+		physics.addBody( corn, "kinematic", physicsData:get("corn") )
 		specialColumn:addEventListener("touch", addDragMove)
 		elements:insert(specialColumn)
 		elements:insert(corn)
 	end
+>>>>>>> 4b8aad129a09af39e80b3a18f236e3e271d9b2d2
 
 end	
 
@@ -296,6 +323,7 @@ function scene:enterScene(event)
 	
 	storyboard.removeScene("start")
 	bg:addEventListener("touch", start)
+	Runtime:addEventListener("enterFrame", follow)
 
 	platform.enterFrame = platformScroller
 	Runtime:addEventListener("enterFrame", platform)
@@ -314,6 +342,7 @@ function scene:exitScene(event)
 	Runtime:removeEventListener("enterFrame", platform)
 	Runtime:removeEventListener("enterFrame", platform2)
 	Runtime:removeEventListener("collision", onCollision)
+	Runtime:removeEventListener("enterFrame", follow)
 	timer.cancel(flyTheBirdTimer)
 	timer.cancel(moveColumnTimer)
 	timer.cancel(memTimer)
