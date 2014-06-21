@@ -6,13 +6,17 @@ local mydata = require( "mydata" )
 local storyboard = require ("storyboard")
 local scene = storyboard.newScene()
 
+local player2
+
 -------------------------------------------------------------------------------------
 
 function startGame(event)
+
      if event.phase == "ended" then
      	mydata.score = 0
 		storyboard.gotoScene("game")
      end
+	 
 end
 
 function groundScroller(self,event)
@@ -26,17 +30,21 @@ function groundScroller(self,event)
 end
 
 function titleTransitionDown()
+
 	downTransition = transition.to(titleGroup,{time=400, y=titleGroup.y+20,onComplete=titleTransitionUp})
 	
 end
 
 function titleTransitionUp()
+
 	upTransition = transition.to(titleGroup,{time=400, y=titleGroup.y-20, onComplete=titleTransitionDown})
 	
 end
 
 function titleAnimation()
+
 	titleTransitionDown()
+	
 end
 
 -------------------------------------------------------------------------------------
@@ -44,6 +52,8 @@ end
 function scene:createScene(event)
 
 	local screenGroup = self.view
+	
+	--mydata.sound = false
 
 	background = display.newImageRect("bg2.png",900,1425)
 	background.anchorX = 0.5
@@ -81,8 +91,35 @@ function scene:createScene(event)
 	start.anchorX = 0.5
 	start.anchorY = 1
 	start.x = display.contentCenterX
-	start.y = display.contentHeight - 400
+	start.y = display.contentHeight - 700
 	screenGroup:insert(start)
+	
+	sound = display.newImageRect("sound_btn.png",356,204)
+	sound.anchorX = 0.5
+	sound.anchorY = 1
+	sound.x = display.contentCenterX
+	sound.y = display.contentHeight - 450
+	screenGroup:insert(sound)
+	
+	pipa = display.newImage("pipa.png")
+	pipa.anchorX = 0.5
+	pipa.anchorY = 1
+	pipa.x = display.contentCenterX
+	pipa.y = display.contentHeight - 450
+	if mydata.sound == true then
+	pipa.alpha = 1
+	else
+	pipa.alpha = 0
+	end
+	
+	screenGroup:insert(pipa) 
+	
+	help = display.newImageRect("help_btn.png",356,204)
+	help.anchorX = 0.5
+	help.anchorY = 1
+	help.x = display.contentCenterX
+	help.y = display.contentHeight - 200
+	screenGroup:insert(help)
 	
 	p_options = 
 	{
@@ -109,7 +146,7 @@ function scene:createScene(event)
 	titleGroup.anchorX = 0.5
 	titleGroup.anchorY = 0.5
 	titleGroup.x = display.contentCenterX
-	titleGroup.y = display.contentCenterY - 250
+	titleGroup.y = display.contentCenterY - 450
 	titleGroup:insert(title)
 	titleGroup:insert(player)
 	screenGroup:insert(titleGroup)
@@ -117,11 +154,175 @@ function scene:createScene(event)
 
 end
 
+-----------------------------------------------HELP-------------------------------------------------------
+
+function helpTransitionUp()
+
+	helpUpTransition = transition.to(player2,{time=5000, y=player2.y-450, onComplete=helpTransitionDown})
+
+end
+
+function helpTransitionDown()
+	
+	helpDownTransition = transition.to(player2,{time=5000, y=player2.y+450, onComplete=helpTransitionUp})
+
+	end
+
+function helpAnimation()
+
+	helpTransitionDown()
+
+end
+
+function helpHandColumn()
+
+	hand.x = column2.x+10
+	hand.y = column2.y+magassag
+
+end
+
+function helpRemove()
+
+	animacioVege = true
+	helpGroup:removeSelf()
+	helpGroup = nil
+	transition.cancel()
+
+end
+
+function helpEltunik()
+
+	Runtime:removeEventListener("enterFrame",helpHandColumn)
+	transition.to(helpGroup,{time=550, alpha = 0, onComplete=helpRemove})
+	help:addEventListener("touch", helpWindow)
+
+end
+
+function helpFollowHeight()
+
+	column2.y = player2.y
+	if column2.x<player2.x-30 then
+		Runtime:removeEventListener("enterFrame",helpFollowHeight)
+		transition.to(hand,{time=550, alpha = 0})
+		timer.performWithDelay( 1000, helpEltunik, 1 )
+	end
+	
+end
+
+function helpMeghivo()
+
+	Runtime:addEventListener("enterFrame",helpFollowHeight)
+
+end
+
+function helpHand()
+
+	if hand.x> column2.x+10 then
+		HandTransition = transition.to(hand,{time=50, x=hand.x-15, y=hand.y-20, onComplete=helpHand})
+	else if helpHC == false then
+		helpHC = true
+		magassag = hand.y-column2.y
+		Runtime:addEventListener("enterFrame",helpHandColumn)
+		ColumnTransition2 = transition.to(column2,{time=550, y=player2.y+50, onComplete=helpMeghivo})
+	end	
+	end
+	
+end	
+
+
+function helpColumn()
+
+	if (column2.x < display.contentCenterX+150) and (kezMeghivva == false) then
+		kezMeghivva = true
+		hand = display.newImage('hand.png')
+		hand.anchorX = 0.5
+		hand.anchorY = 0.5
+		hand.x = display.contentWidth - 200
+		hand.y =  display.contentHeight*0.5+180
+		hand.alpha=0
+		helpGroup:insert(hand)
+		transition.to(hand,{time=150, alpha = 1})
+		helpHC = false
+		helpHand()
+	end
+	if column2.x> display.contentCenterX - 200 then
+		ColumnTransition = transition.to(column2,{time=300, x=column2.x-30, onComplete=helpColumn})
+	end	
+
+end
+
+function helpDemo()
+
+	animacioVege=false
+	
+	p2_options = 
+		{
+			-- Required params
+			width = 60,
+			height = 31.5,
+			numFrames = 2,
+			-- content scaling
+			sheetContentWidth = 120,
+			sheetContentHeight = 31.5,
+		}
+
+	player2Sheet = graphics.newImageSheet( "bat.png", p2_options )
+	player2 = display.newSprite( player2Sheet, { name="player2", start=1, count=2, time=500 } )
+	player2.anchorX = 0.5
+	player2.anchorY = 0.5
+	player2.x = display.contentCenterX
+	player2.y = display.contentCenterY -150
+	player2:play()
+	helpGroup:insert(player2)
+	helpAnimation()	
+	kezMeghivva = false
+	column2 = display.newImage('greekColumn3.png')
+	column2.anchorX = 0.5
+	column2.anchorY = 0.5
+	column2.scaleX=0.7
+	column2.scaleY=0.7
+	column2.x = display.contentWidth - 230
+	column2.y =  display.contentHeight - 400
+	helpGroup:insert(column2)
+	helpColumn()
+
+end
+
+function helpWindow()
+
+	helpGroup = display.newGroup()
+	help:removeEventListener("touch", helpWindow)
+	helpbg= display.newImage("help_bg.png")
+	helpbg.anchorX = 0.5
+	helpbg.anchorY = 0.5
+	helpbg.alpha = 0
+	helpbg.x = display.contentCenterX+5
+	helpbg.y = display.contentCenterY
+	helpGroup:insert(helpbg)
+	grow = transition.to(helpbg,{time=500, alpha=1, onComplete= helpDemo})
+
+end
+---------------------------------------------------------------------------------------------
+
+function soundOption(event)
+ if event.phase == "began" then
+ print(mydata.sound)
+	if mydata.sound == true then
+		mydata.sound = false
+		pipa.alpha = 0
+	else 
+		mydata.sound = true
+		pipa.alpha = 1
+	end
+ end
+end	
 
 function scene:enterScene(event)
 
 	storyboard.removeScene("ad")
 	start:addEventListener("touch", startGame)
+	help:addEventListener("touch", helpWindow)
+	sound:addEventListener("touch", soundOption)
 	platform.enterFrame = groundScroller
 	Runtime:addEventListener("enterFrame", platform)
 	platform2.enterFrame = groundScroller
@@ -132,6 +333,7 @@ end
 function scene:exitScene(event)
 
 	start:removeEventListener("touch", startGame)
+	sound:removeEventListener("touch", soundOption)
 	Runtime:removeEventListener("enterFrame", platform)
 	Runtime:removeEventListener("enterFrame", platform2)
 	transition.cancel(downTransition)
@@ -142,7 +344,6 @@ end
 function scene:destroyScene(event)
 
 end
-
 
 scene:addEventListener("createScene", scene)
 scene:addEventListener("enterScene", scene)
