@@ -8,7 +8,7 @@ local storyboard = require ("storyboard")
 local scene = storyboard.newScene()
 
 mydata.score = 0
-
+mydata.coins = 0
 function scene:createScene(event)
 	-- physics.setDrawMode("hybrid")
 	local screenGroup = self.view
@@ -52,7 +52,18 @@ function scene:createScene(event)
 	physics.addBody(platform2, "static", {density=.1, bounce=0.1, friction=.2})
 	platform2.speed = 4
 	screenGroup:insert(platform2)
-	
+	coinsIcon = display.newImageRect('coins.png',50,50)
+	coinsIcon.anchorX = 0
+	coinsIcon.anchorY = 0
+	coinsIcon.x = 10
+	coinsIcon.y = 10
+	coinsNr = display.newText(mydata.score,70, 5, "Arial", 58)
+	coinsNr:setFillColor(0,0,0)
+	coinsNr.alpha = 1
+	coinsNr.anchorX = 0
+	coinsNr.anchorY = 0
+	screenGroup:insert(coinsNr)
+	screenGroup:insert(coinsIcon)
 	p_options = 
 	{
 		-- Required params
@@ -97,6 +108,8 @@ end
 function onCornCollision( self, event )
 	-- body
 	if ( event.phase == "began" ) then
+		mydata.coins = mydata.coins + 50
+		coinsNr.text = mydata.coins
 		self:removeSelf()
 		self.object2 = nil
 	end
@@ -203,6 +216,7 @@ function start(event)
 			-- 	displayAd()
 			-- 	mydata.bannerShowed = true
 			-- end
+			
 			player.bodyType = "dynamic"
 			instructions.alpha = 0
 			scoreText.alpha = 1
@@ -348,7 +362,7 @@ function addColumns()
 	elements:insert(column)
 	
 	
-	if (mydata.score % 4 == 0) then
+	if (mydata.score % 2 == 0) then
 		specialColumn = display.newImageRect('bottomColumn.png',127,936)
 		specialColumn.type = 'extra'
 		specialColumn.anchorX = 0.5
