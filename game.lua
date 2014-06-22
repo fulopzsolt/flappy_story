@@ -9,8 +9,11 @@ local scene = storyboard.newScene()
 
 mydata.score = 0
 
+pickupSound = audio.loadSound("pickup.wav")
+deadSound = audio.loadSound("dead.wav")
+
 function scene:createScene(event)
-	-- physics.setDrawMode("hybrid")
+	--physics.setDrawMode("hybrid")
 	local screenGroup = self.view
 
     bg = display.newImageRect('bg2.png',1200,1425)
@@ -97,12 +100,18 @@ end
 function onCornCollision( self, event )
 	-- body
 	if ( event.phase == "began" ) then
+		if mydata.sound == true then
+		pickup = audio.play(pickupSound, {channel=1})
+		end
 		self:removeSelf()
 		self.object2 = nil
 	end
 end
 function onCollision( self, event )
 	if ( event.phase == "began" ) then
+	if mydata.sound == true then
+		dead = audio.play(deadSound, {channel=1})
+		end
 		storyboard.gotoScene( "ad" )
 		-- print(event.object2.tag.."   ____collision with")
 		-- if (event.object2.tag == "corn") then
@@ -197,6 +206,58 @@ function displayAd()
 	end
 
 end
+
+function pause()
+
+		transition.pause()
+		timer.pause(moveColumnTimer)
+		timer.pause(flyTheBirdTimer)
+		physics.pause()
+		
+end		
+
+function resume()
+
+		transition.resume()
+		timer.resume(moveColumnTimer)
+		timer.resume(flyTheBirdTimer)
+		physics.start()
+end
+		
+function pauseGame(event)
+
+   local phase = event.phase
+   local keyName = event.keyName
+   if ( "back" == keyName and phase == "up" ) then
+   local function onComplete( event )
+			if "clicked" == event.action then
+				if paused == true then
+				paused = false
+				resume()
+				end
+				local i = event.index
+				if 1 == i then
+					native.cancelAlert( alert )
+					
+				elseif 2 == i then
+					native.requestExit()
+				end
+			end
+		end
+		if paused == false then
+		paused = true
+		pause()
+		else
+		paused = false
+		resume()
+		end
+		local alert = native.showAlert( "PAUSE", "ARE YOU READY TO CONTINUE?", { "CONTINUE", "EXIT" }, onComplete )
+		group:insert(alert);
+		return true
+   end
+   return false  --SEE NOTE BELOW
+end 
+
 function start(event)
    
 		if (gameStarted == false) then
@@ -204,6 +265,8 @@ function start(event)
 			-- 	displayAd()
 			-- 	mydata.bannerShowed = true
 			-- end
+			paused = false
+			Runtime:addEventListener( "key", pauseGame )
 			player.bodyType = "dynamic"
 			instructions.alpha = 0
 			scoreText.alpha = 1
@@ -392,7 +455,7 @@ function scene:enterScene(event)
 	collectgarbage( "restart" )
 	storyboard.removeScene("start")
 	bg:addEventListener("touch", start)
-
+	
 	platform.enterFrame = platformScroller
 	Runtime:addEventListener("enterFrame", platform)
 
