@@ -9,6 +9,8 @@ local scene = storyboard.newScene()
 
 mydata.score = 0
 
+level = 1
+
 pickupSound = audio.loadSound("pickup.wav")
 deadSound = audio.loadSound("dead.wav")
 
@@ -16,7 +18,8 @@ deadSound = audio.loadSound("dead.wav")
 mydata.coins = 0
 
 function scene:createScene(event)
-	--physics.setDrawMode("hybrid")
+
+	physics.setDrawMode("hybrid")
 	local screenGroup = self.view
 
     bg = display.newImageRect('bg2.png',1200,1425)
@@ -50,6 +53,7 @@ function scene:createScene(event)
 	physics.addBody(platform, "static", {density=.1, bounce=0.1, friction=.2})
 	platform.speed = 4
 	screenGroup:insert(platform)
+	
 	platform2 = display.newImageRect('platform.png',900,53)
 	platform2.anchorX = 0
 	platform2.anchorY = 1
@@ -58,11 +62,27 @@ function scene:createScene(event)
 	physics.addBody(platform2, "static", {density=.1, bounce=0.1, friction=.2})
 	platform2.speed = 4
 	screenGroup:insert(platform2)
+	
 	coinsIcon = display.newImageRect('coins.png',50,50)
 	coinsIcon.anchorX = 0
 	coinsIcon.anchorY = 0
 	coinsIcon.x = 10
 	coinsIcon.y = 10
+	
+	levelText = display.newText("LEVEL:",500, 5, "Arial", 58)
+	levelText:setFillColor(0,0,0)
+	levelText.alpha = 1
+	levelText.anchorX = 0
+	levelText.anchorY = 0
+	screenGroup:insert(levelText)
+	
+	levelNr = display.newText(level,740, 5, "Arial", 58)
+	levelNr:setFillColor(0,0,0)
+	levelNr.alpha = 1
+	levelNr.anchorX = 0
+	levelNr.anchorY = 0
+	screenGroup:insert(levelNr)
+	
 	coinsNr = display.newText(mydata.score,70, 5, "Arial", 58)
 	coinsNr:setFillColor(0,0,0)
 	coinsNr.alpha = 1
@@ -70,6 +90,7 @@ function scene:createScene(event)
 	coinsNr.anchorY = 0
 	screenGroup:insert(coinsNr)
 	screenGroup:insert(coinsIcon)
+	
 	p_options = 
 	{
 		-- Required params
@@ -90,8 +111,6 @@ function scene:createScene(event)
 	
 	physics.addBody(player, "static", {density=10, bounce=0, friction=0})
 	player.isFixedRotation = true
-	-- local physicsData = (require "bat").physicsData(scaleFactor)
-	-- physics.addBody( player, "static", physicsData:get("bat") )
 	player:applyForce(0, -300, player.x, player.y)
 	player:play()
 	screenGroup:insert(player)
@@ -112,6 +131,7 @@ function scene:createScene(event)
 end
 
 function onCornCollision( self, event )
+
 	-- body
 	if ( event.phase == "began" ) then
 		if mydata.sound == true then
@@ -124,7 +144,9 @@ function onCornCollision( self, event )
 		self:removeSelf()
 		self.object2 = nil
 	end
+	
 end
+
 function onCollision( self, event )
 	if ( event.phase == "began" ) then
 	if mydata.sound == true then
@@ -159,19 +181,22 @@ function platformScroller(self,event)
 	
 end
 
-
 function getNextHeight()
+
 	local nextY = math.random(player.y - 50, player.y + 50)
 	if (nextY > 40 and nextY < display.viewableContentHeight - 200) then
 	 	return nextY
 	else
 		nextY = getNextHeight()
 	end
+	
 end
 
 local gameStarted = false
 local nextHeight = getNextHeight()
+
 function displayAd()
+
 	display.setStatusBar( display.HiddenStatusBar )
 	local provider = "admob"
 	local appID = "ca-app-pub-4047264809121768/2045757936"
@@ -224,7 +249,7 @@ function displayAd()
 	end
 
 end
-
+---------------------------------------------------------------PAUSE----------------------------------------------------------
 function pause()
 
 		transition.pause()
@@ -275,7 +300,7 @@ function pauseGame(event)
    end
    return false  --SEE NOTE BELOW
 end 
-
+-------------------------------------------------------------------------------------------------------
 function start(event)
    
 		if (gameStarted == false) then
@@ -305,7 +330,9 @@ function start(event)
 		end
 
 end
+
 function flyTheBird()
+
 		if (player.y < nextHeight - 20) then 
 			player:applyForce(0, 200, player.x, player.y)
 		elseif (player.y > nextHeight + 20 ) then 
@@ -313,19 +340,28 @@ function flyTheBird()
 		else 
 			nextHeight = getNextHeight()
 		end
+		
 end
 
 local distanceHelper = 170
+
 function moveColumns()
+
 		for a = elements.numChildren,1,-1  do
 			elements[a]:addEventListener( "touch", doTouch )
 			-- elements[a].tag ='column'
 			-- elements[a]:addEventListener("touch", addDragMove)
 			if(elements[a].x < display.contentCenterX - 170) then
 				if elements[a].scoreAdded == false then
-					print((mydata.score + 1)..'------ '..elements[a].tag..'  ------')
+					if elements[a].type == "column" then
 					mydata.score = mydata.score + 1
 					scoreText.text = mydata.score
+					if mydata.score == 2 then
+					level = level + 1
+					levelNr.text=level
+					print(level)
+					end
+					end
 					elements[a].scoreAdded = true
 				end
 			end
@@ -344,13 +380,12 @@ function moveColumns()
 			if(elements[a].x < display.contentCenterX - 170) then
 				if (elements[a].added == false) then
 					elements[a].added = true
-				
-				end
-				
+				end		
 			end
 			
 			if(elements[a].x > -100) then
-				elements[a].x = elements[a].x - 5
+				
+					elements[a].x = elements[a].x - (3 + 2* level)
 			else 
 				-- print(elements[a].tag.."________-")
 				elements[a]:removeEventListener("touch", addDragMove)
@@ -359,14 +394,13 @@ function moveColumns()
 				elements[a]:removeSelf()
 				elements[a] = nil
 				-- elements:remove(elements[a])
-				
 			end	
-		end
-		
+		end	
 		
 end
 
 function addDragMove(event)
+
 	if event.phase == "began" then
 		if (event.target.tag == "column") then
 		    event.target.markY = event.y	
@@ -382,9 +416,9 @@ function addDragMove(event)
 						corn.y = display.contentHeight - 163 - 120
 					end
 				end
-			elseif (event.target.y < 5) then 
-				event.target.y = 5
-			elseif (event.y <= display.contentHeight - 170) then	
+			elseif (event.target.y < 80) then 
+				event.target.y = 80
+			elseif (event.y <= display.contentHeight - 180) then	
 				local y = (event.y - event.target.markY)
 				event.target.y = event.target.y + y
 				event.target.markY = event.y
@@ -400,7 +434,9 @@ function addDragMove(event)
 	return true
 
 end
+
 function doTouch( event )
+
     if ( event.phase == "began" ) then      
         event.target.alpha = 0.7
         display.getCurrentStage():setFocus( event.target )
@@ -408,12 +444,17 @@ function doTouch( event )
         event.target.alpha = 1
         display.getCurrentStage():setFocus(nil)
     end
+	
 end
+
 function testListener(event, obj)
+
 		if (event.phase == 'began') then
 			print('in')
 		end
+		
 	end
+	
 function addColumns()
 	
 
@@ -431,6 +472,7 @@ function addColumns()
 	column.x = display.contentWidth + 100
 	column.y = height - 160
 	column.tag = 'column'
+	column.type = 'column'
 	column.added = false
 	column.scoreAdded = false
 	column.newColumnCreated = false
@@ -438,7 +480,6 @@ function addColumns()
 	column:addEventListener( "collision", column )
 	column:addEventListener("touch", addDragMove)
 	elements:insert(column)
-	
 	
 	if (mydata.score % 2 == 0) then
 		specialColumn = display.newImageRect('bottomColumn.png',127,936)
@@ -472,13 +513,16 @@ function addColumns()
 end	
 
 local function checkMemory()
+
    collectgarbage( "collect" )
    local memUsage_str = string.format( "MEMORY = %.3f KB", collectgarbage( "count" ) )
    print( memUsage_str, "TEXTURE = "..(system.getInfo("textureMemoryUsed") / (1024 * 1024) ) )
+   
 end
 
 
 function scene:enterScene(event)
+
 	collectgarbage( "collect" )
 	collectgarbage( "restart" )
 	storyboard.removeScene("start")
@@ -496,6 +540,7 @@ function scene:enterScene(event)
 end
 
 function scene:exitScene(event)
+
 	for a = elements.numChildren,1,-1  do
 		elements[a]:removeEventListener("collision", elements[a])
 	end
