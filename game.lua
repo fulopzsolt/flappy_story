@@ -19,7 +19,7 @@ mydata.coins = 0
 
 function scene:createScene(event)
 
-	physics.setDrawMode("hybrid")
+	--physics.setDrawMode("hybrid")
 	local screenGroup = self.view
 
     bg = display.newImageRect('bg2.png',1200,1425)
@@ -131,6 +131,23 @@ function scene:createScene(event)
 end
 
 function onCornCollision( self, event )
+
+	-- body
+	if ( event.phase == "began" ) then
+		if mydata.sound == true then
+		pickup = audio.play(pickupSound, {channel=1})
+		end
+
+		mydata.coins = mydata.coins + 50
+		coinsNr.text = mydata.coins
+
+		self:removeSelf()
+		self.object2 = nil
+	end
+	
+end
+
+function onCorn2Collision( self, event )
 
 	-- body
 	if ( event.phase == "began" ) then
@@ -356,11 +373,11 @@ function moveColumns()
 					if elements[a].type == "column" then
 					mydata.score = mydata.score + 1
 					scoreText.text = mydata.score
-					if mydata.score == 2 then
-					level = level + 1
-					levelNr.text=level
-					print(level)
-					end
+					--if mydata.score == 2 then
+					--level = level + 1
+					--levelNr.text=level
+					--print(level)
+					--end
 					end
 					elements[a].scoreAdded = true
 				end
@@ -393,7 +410,6 @@ function moveColumns()
 				elements[a]:removeEventListener("touch", doTouch)
 				elements[a]:removeSelf()
 				elements[a] = nil
-				-- elements:remove(elements[a])
 			end	
 		end	
 		
@@ -415,16 +431,26 @@ function addDragMove(event)
 					if (corn.isVisible ) then
 						corn.y = display.contentHeight - 163 - 120
 					end
+					if (corn2.isVisible ) then
+						corn2.y = display.contentHeight - 163 - 120
+					end
 				end
 			elseif (event.target.y < 80) then 
 				event.target.y = 80
-			elseif (event.y <= display.contentHeight - 180) then	
+			elseif (event.y <= display.contentHeight - 180) then
 				local y = (event.y - event.target.markY)
+--				print(y)
 				event.target.y = event.target.y + y
 				event.target.markY = event.y
 				if (event.target.type == "extra") then
 					if (corn.isVisible ) then
 						corn.y = corn.y + y
+					end
+					if corn2 ~= nil then
+					print(corn2)
+						if (corn2.isVisible ) then
+							corn2.y = corn2.y + y
+						end	
 					end
 				end
 					
@@ -434,6 +460,8 @@ function addDragMove(event)
 	return true
 
 end
+
+
 
 function doTouch( event )
 
@@ -481,7 +509,7 @@ function addColumns()
 	column:addEventListener("touch", addDragMove)
 	elements:insert(column)
 	
-	if (mydata.score % 2 == 0) then
+	if (mydata.score % 4 == 0) then
 		specialColumn = display.newImageRect('bottomColumn.png',127,936)
 		specialColumn.type = 'extra'
 		specialColumn.anchorX = 0.5
@@ -501,13 +529,40 @@ function addColumns()
 		corn.type = 'extra'
 		corn.collision = onCornCollision
 		corn:addEventListener( "collision", corn )
-		print(corn.tag..'__megvagyok')
 		specialColumn.scoreAdded = false
 		physics.addBody( specialColumn, "kinematic", physicsData:get("bottomColumn") )
 		physics.addBody( corn, "static", {density = 2, friction = 0, bounce = 0} ) --physicsData:get("corn")
 		specialColumn:addEventListener("touch", addDragMove)
 		elements:insert(specialColumn)
 		elements:insert(corn)
+	end
+	
+	if (mydata.score % 4 == 2) then
+		specialColumn2 = display.newImageRect('topColumn.png',127,936)
+		specialColumn2.type = 'extra'
+		specialColumn2.anchorX = 0.5
+		specialColumn2.anchorY = 1
+		specialColumn2.x = display.contentWidth + 400
+		specialColumn2.y = 360
+		specialColumn2.tag = 'column'
+		specialColumn2.scoreAdded = false
+		specialColumn2.collision = onCollision
+		specialColumn2:addEventListener( "collision", specialColumn2 )
+		corn2 = display.newImageRect('corn.png',70,75)
+		corn2.anchorX = 0.5
+		corn2.anchorY = 0.5
+		corn2.x = display.contentWidth + 400
+		corn2.y = 480
+		corn2.tag = 'corn'
+		corn2.type = 'extra'
+		corn2.collision = onCorn2Collision
+		corn2:addEventListener( "collision", corn2 )
+		specialColumn2.scoreAdded = false
+		physics.addBody( specialColumn2, "kinematic", physicsData:get("bottomColumn") )
+		physics.addBody( corn2, "static", {density = 2, friction = 0, bounce = 0} ) --physicsData:get("corn")
+		specialColumn2:addEventListener("touch", addDragMove)
+		elements:insert(specialColumn2)
+		elements:insert(corn2)
 	end
 
 end	
@@ -517,7 +572,7 @@ local function checkMemory()
    collectgarbage( "collect" )
    local memUsage_str = string.format( "MEMORY = %.3f KB", collectgarbage( "count" ) )
    print( memUsage_str, "TEXTURE = "..(system.getInfo("textureMemoryUsed") / (1024 * 1024) ) )
-   
+
 end
 
 
