@@ -22,11 +22,11 @@ function scene:createScene(event)
 	--physics.setDrawMode("hybrid")
 	local screenGroup = self.view
 
-    bg = display.newImageRect('bg2.png',1200,1425)
-	bg.anchorX = 0
+    bg = display.newImage('bg2.png')
+	bg.anchorX = 0.5
 	bg.anchorY = 1
-	bg.x = 0
-	bg.y = display.contentHeight
+	bg.x = display.contentWidth * 0.5
+	bg.y = display.contentHeight -150
 	bg.speed = 4
 	screenGroup:insert(bg)
     
@@ -63,47 +63,60 @@ function scene:createScene(event)
 	platform2.speed = 4
 	screenGroup:insert(platform2)
 	
-	coinsIcon = display.newImageRect('coins.png',50,50)
-	coinsIcon.anchorX = 0
-	coinsIcon.anchorY = 0
-	coinsIcon.x = 10
-	coinsIcon.y = 10
+	pointVase = display.newImage('pointVase.png')
+	pointVase.anchorX = 0
+	pointVase.anchorY = 0
+	pointVase.x = 10
+	pointVase.y = 10
+	screenGroup:insert(pointVase)
 	
-	levelText = display.newText("LEVEL:",500, 5, "Arial", 58)
+	pointCol = display.newImage('pointCol.png')
+	pointCol.anchorX = 0
+	pointCol.anchorY = 0
+	pointCol.x = 580
+	pointCol.y = 10
+	screenGroup:insert(pointCol)
+	
+	if "Win" == system.getInfo( "platformName" ) then
+    DIOGENES = "Diogenes Regular"
+	elseif "Android" == system.getInfo( "platformName" ) then
+    DIOGENES = "DIOGENES"
+	end
+	
+	levelText = display.newText("10 x",480, 5, "DIOGENES", 58)
 	levelText:setFillColor(0,0,0)
 	levelText.alpha = 1
 	levelText.anchorX = 0
 	levelText.anchorY = 0
 	screenGroup:insert(levelText)
 	
-	levelNr = display.newText(level,740, 5, "Arial", 58)
+	levelNr = display.newText(level,740, 5, "DIOGENES", 58)
 	levelNr:setFillColor(0,0,0)
 	levelNr.alpha = 1
 	levelNr.anchorX = 0
 	levelNr.anchorY = 0
 	screenGroup:insert(levelNr)
 	
-	coinsNr = display.newText(mydata.score,70, 5, "Arial", 58)
+	coinsNr = display.newText(mydata.score,80, 5, "DIOGENES", 58)
 	coinsNr:setFillColor(0,0,0)
 	coinsNr.alpha = 1
 	coinsNr.anchorX = 0
 	coinsNr.anchorY = 0
 	screenGroup:insert(coinsNr)
-	screenGroup:insert(coinsIcon)
 	
 	p_options = 
 	{
 		-- Required params
-		width = 80,
-		height = 42,
+		width = 99,
+		height = 81,
 		numFrames = 2,
 		-- content scaling
-		sheetContentWidth = 160,
-		sheetContentHeight = 42,
+		sheetContentWidth = 198,
+		sheetContentHeight = 81,
 	}
 
-	playerSheet = graphics.newImageSheet( "bat.png", p_options )
-	player = display.newSprite( playerSheet, { name="player", start=1, count=2, time=500 } )
+	playerSheet = graphics.newImageSheet( "bird.png", p_options )
+	player = display.newSprite( playerSheet, { name="player", start=1, count=2, time=1500 } )
 	player.anchorX = 0.5
 	player.anchorY = 0.5
 	player.x = display.contentCenterX - 150
@@ -116,7 +129,7 @@ function scene:createScene(event)
 	screenGroup:insert(player)
 	
 	scoreText = display.newText(mydata.score,display.contentCenterX,
-	150, "Arial", 58)
+	150, "DIOGENES", 58)
 	scoreText:setFillColor(0,0,0)
 	scoreText.alpha = 0
 	screenGroup:insert(scoreText)
@@ -167,7 +180,7 @@ end
 function onCollision( self, event )
 	if ( event.phase == "began" ) then
 	if mydata.sound == true then
-		dead = audio.play(deadSound, {channel=1})
+		dead = audio.play(deadSound, {channel=2})
 		end
 		storyboard.gotoScene( "ad" )
 		-- print(event.object2.tag.."   ____collision with")
@@ -466,7 +479,7 @@ end
 function doTouch( event )
 
     if ( event.phase == "began" ) then      
-        event.target.alpha = 0.7
+        event.target.alpha = 1
         display.getCurrentStage():setFocus( event.target )
     elseif event.phase == "ended" or event.phase == "cancelled" then
         event.target.alpha = 1
@@ -486,19 +499,19 @@ function testListener(event, obj)
 function addColumns()
 	
 
-	height = 500
+	height = 600
 	local physicsData = (require "column").physicsData(scaleFactor)
 	if (mydata.score % 2 == 0) then
-		column = display.newImageRect('greekColumn.png',124,1800)
+		column = display.newImage('greekColumn.png')
 		physics.addBody( column, "kinematic", physicsData:get("column") )
 	else
-		column = display.newImageRect('greekColumn2.png',71,1800)
+		column = display.newImage('greekColumn2.png')
 		physics.addBody( column, "kinematic", physicsData:get("column") )
 	end
 	column.anchorX = 0.5
 	column.anchorY = 0.5
 	column.x = display.contentWidth + 100
-	column.y = height - 160
+	column.y = height
 	column.tag = 'column'
 	column.type = 'column'
 	column.added = false
@@ -508,23 +521,24 @@ function addColumns()
 	column:addEventListener( "collision", column )
 	column:addEventListener("touch", addDragMove)
 	elements:insert(column)
-	
+	print("dsgdshdfh",display.contentHeight)
 	if (mydata.score % 4 == 0) then
-		specialColumn = display.newImageRect('bottomColumn.png',127,936)
+		specialColumn = display.newImage('bottomColumn.png')
 		specialColumn.type = 'extra'
 		specialColumn.anchorX = 0.5
 		specialColumn.anchorY = 0
-		specialColumn.x = display.contentWidth + 400
-		specialColumn.y = height + 360
+		specialColumn.x = display.contentWidth + 450
+		specialColumn.y = height + 400
 		specialColumn.tag = 'column'
 		specialColumn.scoreAdded = false
 		specialColumn.collision = onCollision
 		specialColumn:addEventListener( "collision", specialColumn )
-		corn = display.newImageRect('corn.png',70,75)
+		corn = display.newImage('corn.png')
 		corn.anchorX = 0.5
 		corn.anchorY = 0.5
-		corn.x = display.contentWidth + 400
-		corn.y = height + 240
+		corn.scale=2
+		corn.x = specialColumn.x
+		corn.y = height + 320
 		corn.tag = 'corn'
 		corn.type = 'extra'
 		corn.collision = onCornCollision
@@ -548,7 +562,7 @@ function addColumns()
 		specialColumn2.scoreAdded = false
 		specialColumn2.collision = onCollision
 		specialColumn2:addEventListener( "collision", specialColumn2 )
-		corn2 = display.newImageRect('corn.png',70,75)
+		corn2 = display.newImage('corn.png')
 		corn2.anchorX = 0.5
 		corn2.anchorY = 0.5
 		corn2.x = display.contentWidth + 400

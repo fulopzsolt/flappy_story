@@ -55,12 +55,26 @@ function scene:createScene(event)
 	
 	--mydata.sound = false
 
-	background = display.newImageRect("bg2.png",900,1425)
+	background = display.newImage("bg2.png")
 	background.anchorX = 0.5
 	background.anchorY = 1
-	background.x = display.contentCenterX
-	background.y = display.contentHeight
+	background.x = display.contentWidth * 0.5
+	background.y = display.contentHeight - 150
 	screenGroup:insert(background)
+	
+	mask = display.newImage("mask.png")
+	mask.anchorX = 0.5
+	mask.anchorY = 1
+	mask.x = display.contentWidth * 0.5
+	mask.y = display.contentHeight
+	screenGroup:insert(mask)
+	
+	tabla = display.newImageRect('table.png',600,780)
+	tabla.anchorX = 0.5
+	tabla.anchorY = 0.5
+	tabla.x = display.contentCenterX
+	tabla.y = display.contentCenterY+20
+	screenGroup:insert(tabla)
 	
 	title = display.newImageRect("title.png",500,100)
 	title.anchorX = 0.5
@@ -87,25 +101,32 @@ function scene:createScene(event)
 	platform2.speed = 4
 	screenGroup:insert(platform2)
 	
-	start = display.newImageRect("start_btn.png",356,204)
+	start = display.newImageRect("start_btn.png",320,180)
 	start.anchorX = 0.5
-	start.anchorY = 1
+	start.anchorY = 0.5
 	start.x = display.contentCenterX
-	start.y = display.contentHeight - 700
+	start.y = display.contentCenterY - 200
 	screenGroup:insert(start)
 	
-	sound = display.newImageRect("sound_btn.png",356,204)
+	sound = display.newImageRect("sound_btn.png",320,180)
 	sound.anchorX = 0.5
-	sound.anchorY = 1
+	sound.anchorY = 0.5
 	sound.x = display.contentCenterX
-	sound.y = display.contentHeight - 450
+	sound.y = display.contentCenterY + 10
 	screenGroup:insert(sound)
+	
+	negyzet = display.newImageRect("negyzet.png",40,40)
+	negyzet.anchorX = 0.5
+	negyzet.anchorY = 0.5
+	negyzet.x = display.contentCenterX +200
+	negyzet.y = display.contentCenterY + 20
+	screenGroup:insert(negyzet)
 	
 	pipa = display.newImage("pipa.png")
 	pipa.anchorX = 0.5
-	pipa.anchorY = 1
-	pipa.x = display.contentCenterX
-	pipa.y = display.contentHeight - 450
+	pipa.anchorY = 0.5
+	pipa.x = display.contentCenterX +200
+	pipa.y = display.contentCenterY + 20
 	if mydata.sound == true then
 	pipa.alpha = 1
 	else
@@ -114,11 +135,11 @@ function scene:createScene(event)
 	
 	screenGroup:insert(pipa) 
 	
-	help = display.newImageRect("help_btn.png",356,204)
+	help = display.newImageRect("help_btn.png",320,180)
 	help.anchorX = 0.5
-	help.anchorY = 1
+	help.anchorY = 0.5
 	help.x = display.contentCenterX
-	help.y = display.contentHeight - 200
+	help.y = display.contentCenterY + 220
 	screenGroup:insert(help)
 	
 	p_options = 
@@ -158,13 +179,13 @@ end
 
 function helpTransitionUp()
 
-	helpUpTransition = transition.to(player2,{time=5000, y=player2.y-450, onComplete=helpTransitionDown})
+	helpUpTransition = transition.to(player2,{time=4000, y=player2.y-450, onComplete=helpTransitionDown})
 
 end
 
 function helpTransitionDown()
 	
-	helpDownTransition = transition.to(player2,{time=5000, y=player2.y+450, onComplete=helpTransitionUp})
+	helpDownTransition = transition.to(player2,{time=4000, y=player2.y+450, onComplete=helpTransitionUp})
 
 	end
 
@@ -201,7 +222,7 @@ end
 function helpFollowHeight()
 
 	column2.y = player2.y
-	if column2.x<player2.x-30 then
+	if column2.x<player2.x-50 then
 		Runtime:removeEventListener("enterFrame",helpFollowHeight)
 		transition.to(hand,{time=550, alpha = 0})
 		timer.performWithDelay( 1000, helpEltunik, 1 )
@@ -217,7 +238,7 @@ end
 
 function helpHand()
 
-	if hand.x> column2.x+10 then
+	if hand.x> column2.x+20 then
 		HandTransition = transition.to(hand,{time=50, x=hand.x-15, y=hand.y-20, onComplete=helpHand})
 	else if helpHC == false then
 		helpHC = true
@@ -232,7 +253,7 @@ end
 
 function helpColumn()
 
-	if (column2.x < display.contentCenterX+150) and (kezMeghivva == false) then
+	if (column2.x < display.contentCenterX+170) and (kezMeghivva == false) then
 		kezMeghivva = true
 		hand = display.newImage('hand.png')
 		hand.anchorX = 0.5
@@ -258,31 +279,31 @@ function helpDemo()
 	p2_options = 
 		{
 			-- Required params
-			width = 60,
-			height = 31.5,
+			width = 99,
+			height = 81,
 			numFrames = 2,
 			-- content scaling
-			sheetContentWidth = 120,
-			sheetContentHeight = 31.5,
+			sheetContentWidth = 198,
+			sheetContentHeight = 81,
 		}
 
-	player2Sheet = graphics.newImageSheet( "bat.png", p2_options )
+	player2Sheet = graphics.newImageSheet( "bird.png", p2_options )
 	player2 = display.newSprite( player2Sheet, { name="player2", start=1, count=2, time=500 } )
 	player2.anchorX = 0.5
 	player2.anchorY = 0.5
-	player2.x = display.contentCenterX
+	player2.x = display.contentCenterX - 20
 	player2.y = display.contentCenterY -150
 	player2:play()
 	helpGroup:insert(player2)
 	helpAnimation()	
 	kezMeghivva = false
-	column2 = display.newImage('greekColumn3.png')
+	column2 = display.newImage('greekColumn2.png')
 	column2.anchorX = 0.5
 	column2.anchorY = 0.5
-	column2.scaleX=0.7
-	column2.scaleY=0.7
+	column2:scale(0.7,0.7)
+
 	column2.x = display.contentWidth - 230
-	column2.y =  display.contentHeight - 400
+	column2.y =  display.contentHeight - 550
 	helpGroup:insert(column2)
 	helpColumn()
 
@@ -292,12 +313,12 @@ function helpWindow()
 
 	helpGroup = display.newGroup()
 	help:removeEventListener("touch", helpWindow)
-	helpbg= display.newImage("help_bg.png")
+	helpbg= display.newImageRect("table.png", 600,780)
 	helpbg.anchorX = 0.5
 	helpbg.anchorY = 0.5
 	helpbg.alpha = 0
-	helpbg.x = display.contentCenterX+5
-	helpbg.y = display.contentCenterY
+	helpbg.x = display.contentCenterX
+	helpbg.y = display.contentCenterY+20
 	helpGroup:insert(helpbg)
 	grow = transition.to(helpbg,{time=500, alpha=1, onComplete= helpDemo})
 
