@@ -110,7 +110,7 @@ function scene:createScene(event)
 	-- background.y = display.contentCenterY
 	-- screenGroup:insert(background)
 	
-	gameOver = display.newImageRect("gameOver.png",500,100)
+	gameOver = display.newImage("gameOver.png")
 	gameOver.anchorX = 0.5
 	gameOver.anchorY = 0.5
 	gameOver.x = display.contentCenterX 

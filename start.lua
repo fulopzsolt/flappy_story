@@ -31,13 +31,13 @@ end
 
 function titleTransitionDown()
 
-	downTransition = transition.to(titleGroup,{time=400, y=titleGroup.y+20,onComplete=titleTransitionUp})
+	downTransition = transition.to(titleGroup,{time=750, y=titleGroup.y+20,onComplete=titleTransitionUp})
 	
 end
 
 function titleTransitionUp()
 
-	upTransition = transition.to(titleGroup,{time=400, y=titleGroup.y-20, onComplete=titleTransitionDown})
+	upTransition = transition.to(titleGroup,{time=750, y=titleGroup.y-20, onComplete=titleTransitionDown})
 	
 end
 
@@ -69,12 +69,12 @@ function scene:createScene(event)
 	mask.y = display.contentHeight
 	screenGroup:insert(mask)
 	
-	tabla = display.newImageRect('table.png',600,780)
+	--[[tabla = display.newImageRect('table.png',600,780)
 	tabla.anchorX = 0.5
 	tabla.anchorY = 0.5
 	tabla.x = display.contentCenterX
 	tabla.y = display.contentCenterY+20
-	screenGroup:insert(tabla)
+	screenGroup:insert(tabla)--]]
 	
 	title = display.newImageRect("title.png",500,100)
 	title.anchorX = 0.5
@@ -105,28 +105,28 @@ function scene:createScene(event)
 	start.anchorX = 0.5
 	start.anchorY = 0.5
 	start.x = display.contentCenterX
-	start.y = display.contentCenterY - 200
+	start.y = display.contentCenterY - 190
 	screenGroup:insert(start)
 	
 	sound = display.newImageRect("sound_btn.png",320,180)
 	sound.anchorX = 0.5
 	sound.anchorY = 0.5
 	sound.x = display.contentCenterX
-	sound.y = display.contentCenterY + 10
+	sound.y = start.y + 210
 	screenGroup:insert(sound)
 	
 	negyzet = display.newImageRect("negyzet.png",40,40)
 	negyzet.anchorX = 0.5
 	negyzet.anchorY = 0.5
 	negyzet.x = display.contentCenterX +200
-	negyzet.y = display.contentCenterY + 20
+	negyzet.y = sound.y + 10
 	screenGroup:insert(negyzet)
 	
 	pipa = display.newImage("pipa.png")
 	pipa.anchorX = 0.5
 	pipa.anchorY = 0.5
-	pipa.x = display.contentCenterX +200
-	pipa.y = display.contentCenterY + 20
+	pipa.x = display.contentCenterX +205
+	pipa.y = negyzet.y
 	if mydata.sound == true then
 	pipa.alpha = 1
 	else
@@ -139,22 +139,23 @@ function scene:createScene(event)
 	help.anchorX = 0.5
 	help.anchorY = 0.5
 	help.x = display.contentCenterX
-	help.y = display.contentCenterY + 220
+	help.y = sound.y + 210
 	screenGroup:insert(help)
 	
-	p_options = 
+		p_options = 
 	{
 		-- Required params
-		width = 80,
-		height = 42,
+		width = 99,
+		height = 81,
 		numFrames = 2,
 		-- content scaling
-		sheetContentWidth = 160,
-		sheetContentHeight = 42,
+		sheetContentWidth = 198,
+		sheetContentHeight = 81,
 	}
 
-	playerSheet = graphics.newImageSheet( "bat.png", p_options )
-	player = display.newSprite( playerSheet, { name="player", start=1, count=2, time=500 } )
+
+	playerSheet = graphics.newImageSheet( "bird.png", p_options )
+	player = display.newSprite( playerSheet, { name="player", start=1, count=2, time=1500 } )
 	player.anchorX = 0.5
 	player.anchorY = 0.5
 	player.x = display.contentCenterX + 240
@@ -327,7 +328,7 @@ end
 
 function soundOption(event)
  if event.phase == "began" then
- print(mydata.sound)
+ 
 	if mydata.sound == true then
 		mydata.sound = false
 		pipa.alpha = 0

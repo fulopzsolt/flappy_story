@@ -116,7 +116,7 @@ function showStart()
 end
 
 function showScore()
-	scoreTransition = transition.to(scoreBg,{time=600, y=display.contentCenterY,onComplete=showStart})
+	scoreTransition = transition.to(scoreBg,{time=600, alpha = 1,onComplete=showStart})
 	
 end
 
@@ -158,26 +158,27 @@ function scene:createScene(event)
 	-- background.y = display.contentCenterY
 	-- screenGroup:insert(background)
 	
-	gameOver = display.newImageRect("gameOver.png",500,100)
+	gameOver = display.newImage("gameOver.png",500,100)
 	gameOver.anchorX = 0.5
 	gameOver.anchorY = 0.5
 	gameOver.x = display.contentCenterX 
-	gameOver.y = display.contentCenterY - 300
+	gameOver.y = display.contentCenterY - 600
 	gameOver.alpha = 0
 	screenGroup:insert(gameOver)
 	
-	scoreBg = display.newImageRect("menuBg.png",480,393)
+	scoreBg = display.newImageRect("table.png",600,780)
 	scoreBg.anchorX = 0.5
 	scoreBg.anchorY = 0.5
     scoreBg.x = display.contentCenterX
-    scoreBg.y = display.contentHeight + 500
+    scoreBg.y = display.contentCenterY + 20
+	scoreBg.alpha = 0
     screenGroup:insert(scoreBg)
 	
 	restart = display.newImageRect("start_btn.png",356,204)
 	restart.anchorX = 0.5
 	restart.anchorY = 1
 	restart.x = display.contentCenterX
-	restart.y = display.contentCenterY + 500
+	restart.y = display.contentCenterY + 300
 	restart.alpha = 0
 	screenGroup:insert(restart)
 	

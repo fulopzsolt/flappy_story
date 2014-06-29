@@ -63,10 +63,15 @@ function scene:createScene(event)
 	platform2.speed = 4
 	screenGroup:insert(platform2)
 	
+	pointRect = display.newRect( 0, 0, 1600, 160 )
+	pointRect.alpha = 0.2
+	pointRect:setFillColor(0.84,0.33,0.03)
+	screenGroup:insert(pointRect)
+	
 	pointVase = display.newImage('pointVase.png')
 	pointVase.anchorX = 0
 	pointVase.anchorY = 0
-	pointVase.x = 10
+	pointVase.x = 100
 	pointVase.y = 10
 	screenGroup:insert(pointVase)
 	
@@ -77,6 +82,7 @@ function scene:createScene(event)
 	pointCol.y = 10
 	screenGroup:insert(pointCol)
 	
+	
 	if "Win" == system.getInfo( "platformName" ) then
     DIOGENES = "Diogenes Regular"
 	elseif "Android" == system.getInfo( "platformName" ) then
@@ -84,21 +90,21 @@ function scene:createScene(event)
 	end
 	
 	levelText = display.newText("10 x",480, 5, "DIOGENES", 58)
-	levelText:setFillColor(0,0,0)
+	levelText:setFillColor(255,255,255)
 	levelText.alpha = 1
 	levelText.anchorX = 0
 	levelText.anchorY = 0
 	screenGroup:insert(levelText)
 	
 	levelNr = display.newText(level,740, 5, "DIOGENES", 58)
-	levelNr:setFillColor(0,0,0)
+	levelNr:setFillColor(255,255,255)
 	levelNr.alpha = 1
 	levelNr.anchorX = 0
 	levelNr.anchorY = 0
 	screenGroup:insert(levelNr)
 	
-	coinsNr = display.newText(mydata.score,80, 5, "DIOGENES", 58)
-	coinsNr:setFillColor(0,0,0)
+	coinsNr = display.newText(mydata.score,180, 5, "DIOGENES", 58)
+	coinsNr:setFillColor(255,255,255)
 	coinsNr.alpha = 1
 	coinsNr.anchorX = 0
 	coinsNr.anchorY = 0
@@ -134,12 +140,7 @@ function scene:createScene(event)
 	scoreText.alpha = 0
 	screenGroup:insert(scoreText)
 	
-	instructions = display.newImageRect("instructions.png",400,328)
-	instructions.anchorX = 0.5
-	instructions.anchorY = 0.5
-	instructions.x = display.contentCenterX
-	instructions.y = display.contentCenterY
-	screenGroup:insert(instructions)
+
 	
 end
 
@@ -348,7 +349,6 @@ function start(event)
 			paused = false
 			Runtime:addEventListener( "key", pauseGame )
 			player.bodyType = "dynamic"
-			instructions.alpha = 0
 			scoreText.alpha = 1
 			addColumns()
 			moveColumnTimer = timer.performWithDelay(2, moveColumns, -1)
@@ -385,7 +385,7 @@ function moveColumns()
 				if elements[a].scoreAdded == false then
 					if elements[a].type == "column" then
 					mydata.score = mydata.score + 1
-					scoreText.text = mydata.score
+					--scoreText.text = mydata.score
 					--if mydata.score == 2 then
 					--level = level + 1
 					--levelNr.text=level
@@ -414,15 +414,16 @@ function moveColumns()
 			end
 			
 			if(elements[a].x > -100) then
-				
+					
 					elements[a].x = elements[a].x - (3 + 2* level)
 			else 
 				-- print(elements[a].tag.."________-")
 				elements[a]:removeEventListener("touch", addDragMove)
 				elements[a]:removeEventListener("collision", elements[a])
 				elements[a]:removeEventListener("touch", doTouch)
-				elements[a]:removeSelf()
-				elements[a] = nil
+				elements:remove(elements[a])
+				--elements[a]:removeSelf()
+				--elements[a] = nil
 			end	
 		end	
 		
