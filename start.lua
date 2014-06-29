@@ -59,7 +59,7 @@ function scene:createScene(event)
 	background.anchorX = 0.5
 	background.anchorY = 1
 	background.x = display.contentWidth * 0.5
-	background.y = display.contentHeight - 150
+	background.y = display.contentHeight - 165
 	screenGroup:insert(background)
 	
 	mask = display.newImage("mask.png")
@@ -105,7 +105,7 @@ function scene:createScene(event)
 	start.anchorX = 0.5
 	start.anchorY = 0.5
 	start.x = display.contentCenterX
-	start.y = display.contentCenterY - 190
+	start.y = background.y - 700
 	screenGroup:insert(start)
 	
 	sound = display.newImageRect("sound_btn.png",320,180)
@@ -214,8 +214,9 @@ end
 
 function helpEltunik()
 
+	column2.alpha=0
 	Runtime:removeEventListener("enterFrame",helpHandColumn)
-	transition.to(helpGroup,{time=550, alpha = 0, onComplete=helpRemove})
+	transition.to(helpGroup,{time=700, alpha = 0, onComplete=helpRemove})
 	help:addEventListener("touch", helpWindow)
 
 end
@@ -260,7 +261,7 @@ function helpColumn()
 		hand.anchorX = 0.5
 		hand.anchorY = 0.5
 		hand.x = display.contentWidth - 200
-		hand.y =  display.contentHeight*0.5+180
+		hand.y =  display.contentHeight*0.5+80
 		hand.alpha=0
 		helpGroup:insert(hand)
 		transition.to(hand,{time=150, alpha = 1})
@@ -275,6 +276,7 @@ end
 
 function helpDemo()
 
+	
 	animacioVege=false
 	
 	p2_options = 
@@ -306,6 +308,11 @@ function helpDemo()
 	column2.x = display.contentWidth - 230
 	column2.y =  display.contentHeight - 550
 	helpGroup:insert(column2)
+	
+	helpbg:toFront()
+	platform:toFront()
+	platform2:toFront()
+	mask2:toFront()
 	helpColumn()
 
 end
@@ -314,15 +321,31 @@ function helpWindow()
 
 	helpGroup = display.newGroup()
 	help:removeEventListener("touch", helpWindow)
-	helpbg= display.newImageRect("table.png", 600,780)
+	helpbg= display.newImage("trimBg.png")
 	helpbg.anchorX = 0.5
-	helpbg.anchorY = 0.5
-	helpbg.alpha = 0
+	helpbg.anchorY = 1
+	--helpbg.alpha = 0
 	helpbg.x = display.contentCenterX
-	helpbg.y = display.contentCenterY+20
+	helpbg.y = background.y
 	helpGroup:insert(helpbg)
-	grow = transition.to(helpbg,{time=500, alpha=1, onComplete= helpDemo})
-
+	
+	helpbg2= display.newImage("trimBg2.png")
+	helpbg2.anchorX = 0.5
+	helpbg2.anchorY = 1
+	--helpbg.alpha = 0
+	helpbg2.x = display.contentCenterX
+	helpbg2.y = background.y - 96
+	helpGroup:insert(helpbg2)
+	
+	mask2 = display.newImage("mask2.png")
+	mask2.anchorX = 0.5
+	mask2.anchorY = 1
+	mask2.x = display.contentWidth * 0.5
+	mask2.y = display.contentHeight
+	helpGroup:insert(mask2)
+	helpGroup.alpha = 0
+	grow = transition.to(helpGroup,{time=700, alpha=1, onComplete= helpDemo})
+	
 end
 ---------------------------------------------------------------------------------------------
 

@@ -26,7 +26,7 @@ function scene:createScene(event)
 	bg.anchorX = 0.5
 	bg.anchorY = 1
 	bg.x = display.contentWidth * 0.5
-	bg.y = display.contentHeight -150
+	bg.y = display.contentHeight -165
 	bg.speed = 4
 	screenGroup:insert(bg)
     
@@ -63,7 +63,8 @@ function scene:createScene(event)
 	platform2.speed = 4
 	screenGroup:insert(platform2)
 	
-	pointRect = display.newRect( 0, 0, 1600, 160 )
+	pointRect = display.newRect( 0, 0, display.contentWidth, 160 )
+	pointRect.anchorX = 0
 	pointRect.alpha = 0.2
 	pointRect:setFillColor(0.84,0.33,0.03)
 	screenGroup:insert(pointRect)
