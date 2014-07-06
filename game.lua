@@ -7,15 +7,29 @@ local mydata = require( "mydata" )
 local storyboard = require ("storyboard")
 local scene = storyboard.newScene()
 
+local introNr
+
 mydata.score = 0
 
-level = 1
+level = 3
 
 pickupSound = audio.loadSound("pickup.wav")
 deadSound = audio.loadSound("dead.wav")
 
 
 mydata.coins = 0
+
+function intro()
+
+	introNr = introNr-1
+	if introNr<0 then
+	
+	introNr:removeSelf()
+	introNr=nil
+	start()
+	end
+
+	end	
 
 function scene:createScene(event)
 
@@ -126,7 +140,7 @@ function scene:createScene(event)
 	player = display.newSprite( playerSheet, { name="player", start=1, count=2, time=1500 } )
 	player.anchorX = 0.5
 	player.anchorY = 0.5
-	player.x = display.contentCenterX - 150
+	player.x = display.contentCenterX - 450
 	player.y = display.contentCenterY
 	
 	physics.addBody(player, "static", {density=10, bounce=0, friction=0})
@@ -141,7 +155,14 @@ function scene:createScene(event)
 	scoreText.alpha = 0
 	screenGroup:insert(scoreText)
 	
-
+	introTransition = transition.to(player,{time=2500, x = display.contentCenterX - 170, onComplete = start})
+	
+	introNr = 3
+	
+	--introText = display.newText(introNr,display.contentCenterX,500, "DIOGENES", 58)
+	--scoreText:setFillColor(0,0,0)
+	
+	--timer.performWithDelay(1000, intro, 3)
 	
 end
 
@@ -155,26 +176,10 @@ function onCornCollision( self, event )
 
 		mydata.coins = mydata.coins + 50
 		coinsNr.text = mydata.coins
-
+		
 		self:removeSelf()
 		self.object2 = nil
-	end
-	
-end
 
-function onCorn2Collision( self, event )
-
-	-- body
-	if ( event.phase == "began" ) then
-		if mydata.sound == true then
-		pickup = audio.play(pickupSound, {channel=1})
-		end
-
-		mydata.coins = mydata.coins + 50
-		coinsNr.text = mydata.coins
-
-		self:removeSelf()
-		self.object2 = nil
 	end
 	
 end
@@ -352,7 +357,7 @@ function start(event)
 			player.bodyType = "dynamic"
 			scoreText.alpha = 1
 			addColumns()
-			moveColumnTimer = timer.performWithDelay(2, moveColumns, -1)
+			moveColumnTimer = timer.performWithDelay(1, moveColumns, -1)
 
 		 	flyTheBirdTimer = timer.performWithDelay(100, flyTheBird, -1)
 			gameStarted = true
@@ -382,11 +387,14 @@ function moveColumns()
 			elements[a]:addEventListener( "touch", doTouch )
 			-- elements[a].tag ='column'
 			-- elements[a]:addEventListener("touch", addDragMove)
+			
 			if(elements[a].x < display.contentCenterX - 170) then
+			
 				if elements[a].scoreAdded == false then
+					print("ssssssssss")
 					if elements[a].type == "column" then
-					mydata.score = mydata.score + 1
-					--scoreText.text = mydata.score
+					mydata.score = mydata.score + level*10
+					scoreText.text = mydata.score
 					--if mydata.score == 2 then
 					--level = level + 1
 					--levelNr.text=level
@@ -396,7 +404,7 @@ function moveColumns()
 					elements[a].scoreAdded = true
 				end
 			end
-			if(elements[a].x < display.contentCenterX - distanceHelper) then
+			--[[if(elements[a].x < display.contentCenterX - distanceHelper) then
 
 				if (elements[a].newColumnCreated == false) then
 					if ((mydata.score % 2 == 0) and (distanceHelper > 50)) then
@@ -412,43 +420,73 @@ function moveColumns()
 				if (elements[a].added == false) then
 					elements[a].added = true
 				end		
-			end
+			end]]--
 			
 			if(elements[a].x > -100) then
-					
-					elements[a].x = elements[a].x - (3 + 2* level)
+
+					elements[a].x = elements[a].x - (3 + 1* level)
 			else 
-				-- print(elements[a].tag.."________-")
+				
+				--if (elements[a].newColumnCreated == false) then
+					elements[a].x = display.contentWidth + 500
+					if elements[a].tag == "column" then
+						elements[a].y = height
+						
+					elseif elements[a].tag == "bottomColumn" then
+						elements[a].y = platform.y - 150
+						
+						if corn.x == nil then
+						corn = display.newImage('corn.png')
+						corn.anchorX = 0.5
+						corn.anchorY = 0.5
+						corn.scale=2
+						corn.x = specialColumn.x
+						corn.y = specialColumn.y - 80
+						corn.tag = 'corn'
+						corn.type = 'extra'
+						corn.collision = onCornCollision
+						corn:addEventListener( "collision", corn )
+						physics.addBody( corn, "static", {density = 2, friction = 0, bounce = 0} ) --physicsData:get("corn")
+						elements:insert(corn)
+						end
+					elseif elements[a].tag == "corn" then
+						elements[a].alpha = 1
+					end
+					elements[a].newColumnCreated = true
+					elements[a].scoreAdded = false
+			--	end
+			
+			end
+			--[[	-- print(elements[a].tag.."________-")
 				elements[a]:removeEventListener("touch", addDragMove)
 				elements[a]:removeEventListener("collision", elements[a])
 				elements[a]:removeEventListener("touch", doTouch)
 				elements:remove(elements[a])
 				--elements[a]:removeSelf()
-				--elements[a] = nil
+				--elements[a] = nil]]--
 			end	
-		end	
 		
 end
 
 function addDragMove(event)
 
 	if event.phase == "began" then
-		if (event.target.tag == "column") then
+		if (event.target.tag ~= "corn") then
 		    event.target.markY = event.y	
 		    event.target.goodTouch = true
 		end
 	-- return false
 	elseif event.phase == "moved" then
-		if (event.target.tag == "column") and (event.target.goodTouch == true)then
-			if (event.target.y > display.contentHeight - 163) then	
-				event.target.y = display.contentHeight - 163
+		if (event.target.tag ~= "corn") and (event.target.goodTouch == true)then
+			if (event.target.y > display.contentHeight - 260) then	
+				event.target.y = display.contentHeight - 260
 				if (event.target.type == "extra") then
 					if (corn.isVisible ) then
 						corn.y = display.contentHeight - 163 - 120
 					end
-					if (corn2.isVisible ) then
-						corn2.y = display.contentHeight - 163 - 120
-					end
+					--if (corn2.isVisible ) then
+					--	corn2.y = display.contentHeight - 163 - 120
+					--end
 				end
 			elseif (event.target.y < 80) then 
 				event.target.y = 80
@@ -461,12 +499,12 @@ function addDragMove(event)
 					if (corn.isVisible ) then
 						corn.y = corn.y + y
 					end
-					if corn2 ~= nil then
-					print(corn2)
-						if (corn2.isVisible ) then
-							corn2.y = corn2.y + y
-						end	
-					end
+					--if corn2 ~= nil then
+		
+					--	if (corn2.isVisible ) then
+					--		corn2.y = corn2.y + y
+					--	end	
+					--end
 				end
 					
 			end
@@ -500,38 +538,48 @@ function testListener(event, obj)
 	
 function addColumns()
 	
-
 	height = 600
 	local physicsData = (require "column").physicsData(scaleFactor)
-	if (mydata.score % 2 == 0) then
+	
 		column = display.newImage('greekColumn.png')
 		physics.addBody( column, "kinematic", physicsData:get("column") )
-	else
-		column = display.newImage('greekColumn2.png')
-		physics.addBody( column, "kinematic", physicsData:get("column") )
-	end
-	column.anchorX = 0.5
-	column.anchorY = 0.5
-	column.x = display.contentWidth + 100
-	column.y = height
-	column.tag = 'column'
-	column.type = 'column'
-	column.added = false
-	column.scoreAdded = false
-	column.newColumnCreated = false
-	column.collision = onCollision
-	column:addEventListener( "collision", column )
-	column:addEventListener("touch", addDragMove)
-	elements:insert(column)
-	print("dsgdshdfh",display.contentHeight)
-	if (mydata.score % 4 == 0) then
+		column.anchorX = 0.5
+		column.anchorY = 0.5
+		column.x = display.contentWidth + 100
+		column.y = height
+		column.tag = 'column'
+		column.type = 'column'
+		column.added = false
+		column.scoreAdded = false
+		column.newColumnCreated = false
+		column.collision = onCollision
+		column:addEventListener( "collision", column )
+		column:addEventListener("touch", addDragMove)
+		elements:insert(column)
+
+		column2 = display.newImage('greekColumn2.png')
+		physics.addBody( column2, "kinematic", physicsData:get("column") )
+		column2.anchorX = 0.5
+		column2.anchorY = 0.5
+		column2.x = display.contentWidth + 800
+		column2.y = height
+		column2.tag = 'column'
+		column2.type = 'column'
+		column2.added = false
+		column2.scoreAdded = false
+		column2.newColumnCreated = false
+		column2.collision = onCollision
+		column2:addEventListener( "collision", column2 )
+		column2:addEventListener("touch", addDragMove)
+		elements:insert(column2)
+
 		specialColumn = display.newImage('bottomColumn.png')
 		specialColumn.type = 'extra'
 		specialColumn.anchorX = 0.5
 		specialColumn.anchorY = 0
 		specialColumn.x = display.contentWidth + 450
-		specialColumn.y = height + 400
-		specialColumn.tag = 'column'
+		specialColumn.y = platform.y - 150
+		specialColumn.tag = 'bottomColumn'
 		specialColumn.scoreAdded = false
 		specialColumn.collision = onCollision
 		specialColumn:addEventListener( "collision", specialColumn )
@@ -540,7 +588,7 @@ function addColumns()
 		corn.anchorY = 0.5
 		corn.scale=2
 		corn.x = specialColumn.x
-		corn.y = height + 320
+		corn.y = specialColumn.y - 80
 		corn.tag = 'corn'
 		corn.type = 'extra'
 		corn.collision = onCornCollision
@@ -551,36 +599,33 @@ function addColumns()
 		specialColumn:addEventListener("touch", addDragMove)
 		elements:insert(specialColumn)
 		elements:insert(corn)
-	end
-	
-	if (mydata.score % 4 == 2) then
-		specialColumn2 = display.newImageRect('topColumn.png',127,936)
+
+	--[[	specialColumn2 = display.newImage('topColumn.png')
 		specialColumn2.type = 'extra'
 		specialColumn2.anchorX = 0.5
 		specialColumn2.anchorY = 1
-		specialColumn2.x = display.contentWidth + 400
+		specialColumn2.x = display.contentWidth + 1150
 		specialColumn2.y = 360
-		specialColumn2.tag = 'column'
+		specialColumn2.tag = 'topColumn'
 		specialColumn2.scoreAdded = false
 		specialColumn2.collision = onCollision
 		specialColumn2:addEventListener( "collision", specialColumn2 )
 		corn2 = display.newImage('corn.png')
 		corn2.anchorX = 0.5
 		corn2.anchorY = 0.5
-		corn2.x = display.contentWidth + 400
-		corn2.y = 480
+		corn2.x = specialColumn2.x
+		corn2.y = specialColumn2.y + 120
 		corn2.tag = 'corn'
 		corn2.type = 'extra'
-		corn2.collision = onCorn2Collision
+		corn2.collision = onCornCollision
 		corn2:addEventListener( "collision", corn2 )
 		specialColumn2.scoreAdded = false
 		physics.addBody( specialColumn2, "kinematic", physicsData:get("bottomColumn") )
 		physics.addBody( corn2, "static", {density = 2, friction = 0, bounce = 0} ) --physicsData:get("corn")
 		specialColumn2:addEventListener("touch", addDragMove)
 		elements:insert(specialColumn2)
-		elements:insert(corn2)
-	end
-
+		elements:insert(corn2)]]--
+		
 end	
 
 local function checkMemory()
@@ -597,7 +642,7 @@ function scene:enterScene(event)
 	collectgarbage( "collect" )
 	collectgarbage( "restart" )
 	storyboard.removeScene("start")
-	bg:addEventListener("touch", start)
+	--bg:addEventListener("touch", start)
 	
 	platform.enterFrame = platformScroller
 	Runtime:addEventListener("enterFrame", platform)
@@ -615,7 +660,7 @@ function scene:exitScene(event)
 	for a = elements.numChildren,1,-1  do
 		elements[a]:removeEventListener("collision", elements[a])
 	end
-	bg:removeEventListener("touch", start)
+	--bg:removeEventListener("touch", start)
 	Runtime:removeEventListener("enterFrame", platform)
 	Runtime:removeEventListener("enterFrame", platform2)
 	-- Runtime:removeEventListener("collision", onCollision)

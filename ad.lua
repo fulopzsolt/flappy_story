@@ -116,7 +116,8 @@ function showStart()
 end
 
 function showScore()
-	scoreTransition = transition.to(scoreBg,{time=600, alpha = 1,onComplete=showStart})
+	--scoreTransition = transition.to(scoreBg,{time=600, alpha = 1})
+	scoreTransition = transition.to(yourScore,{time=600, alpha = 1,onComplete=showStart})
 	
 end
 
@@ -127,13 +128,13 @@ end
 function loadScore()
 	local prevScore = score.load()
 	if prevScore ~= nil then
-		if prevScore <= mydata.score then
-			score.set(mydata.score)
+		if prevScore <= mydata.totalScore then
+			score.set(mydata.totalScore)
 		else 
 			score.set(prevScore)	
 		end
 	else 
-		score.set(mydata.score)	
+		score.set(mydata.totalScore)	
 		score.save()
 	end
 end
@@ -144,13 +145,23 @@ end
 
 function scene:createScene(event)
 
+	mydata.totalScore = mydata.score + mydata.coins
+
 	local screenGroup = self.view
-	background = display.newImageRect("bg2.png",900,1425)
+	background = display.newImage("bg2.png")
 	background.anchorX = 0.5
 	background.anchorY = 1
 	background.x = display.contentCenterX
-	background.y = display.contentHeight
+	background.y = display.contentHeight -165
 	screenGroup:insert(background)
+	
+	mask = display.newImage("mask2.png")
+	mask.anchorX = 0.5
+	mask.anchorY = 1
+	mask.x = display.contentWidth * 0.5
+	mask.y = display.contentHeight
+	screenGroup:insert(mask)
+	
 	-- background = display.newImageRect("bg.png",900,1425)
 	-- background.anchorX = 0.5
 	-- background.anchorY = 0.5
@@ -162,38 +173,90 @@ function scene:createScene(event)
 	gameOver.anchorX = 0.5
 	gameOver.anchorY = 0.5
 	gameOver.x = display.contentCenterX 
-	gameOver.y = display.contentCenterY - 600
+	gameOver.y = 80
 	gameOver.alpha = 0
 	screenGroup:insert(gameOver)
 	
-	scoreBg = display.newImageRect("table.png",600,780)
-	scoreBg.anchorX = 0.5
-	scoreBg.anchorY = 0.5
-    scoreBg.x = display.contentCenterX
-    scoreBg.y = display.contentCenterY + 20
-	scoreBg.alpha = 0
-    screenGroup:insert(scoreBg)
+	tableS = display.newImage("tableS.png")
+	tableS.anchorX = 0.5
+	tableS.anchorY = 0.5
+	tableS:scale(0.9,0.9)
+	tableS.x = display.contentCenterX 
+	tableS.y = gameOver.y + 250
+	tableS.alpha = 1
+	screenGroup:insert(tableS)
 	
-	restart = display.newImageRect("start_btn.png",356,204)
+	yourScore = display.newImage("yourScore.png")
+	yourScore.anchorX = 0.5
+	yourScore.anchorY = 0.5
+	yourScore.x = display.contentCenterX 
+	yourScore.y = tableS.y + 250
+	yourScore.alpha = 0
+	screenGroup:insert(yourScore)
+	
+	highScore = display.newImage("highScore.png")
+	highScore.anchorX = 0.5
+	highScore.anchorY = 0.5
+	highScore.x = display.contentCenterX 
+	highScore.y = tableS.y - 60 
+	highScore.alpha = 1
+	screenGroup:insert(highScore)
+	
+	pointCol = display.newImage('pointCol.png')
+	pointCol.anchorX = 0.5
+	pointCol.anchorY = 0.5
+	pointCol:scale(1.5,1.5)
+	pointCol.x = 110
+	pointCol.y = yourScore.y + 200 
+	screenGroup:insert(pointCol)
+	
+	pointVase = display.newImage('pointVase.png')
+	pointVase.anchorX = 0.5
+	pointVase.anchorY = 0.5
+	pointVase:scale(1.5,1.5)
+	pointVase.x = display.contentWidth - 110
+	pointVase.y = pointCol.y 
+	screenGroup:insert(pointVase)
+	
+	
+	
+	restart = display.newImageRect("start_btn.png",320,180)
 	restart.anchorX = 0.5
 	restart.anchorY = 1
 	restart.x = display.contentCenterX
-	restart.y = display.contentCenterY + 300
+	if (yourScore.y + 550) < (display.contentHeight - 115) 
+	then
+	restart.y = yourScore.y + 550
+	else
+	restart.y = display.contentHeight - 115
+	end
 	restart.alpha = 0
-	screenGroup:insert(restart)
+	screenGroup:insert(restart) 
 	
-	scoreText = display.newText(mydata.score,display.contentCenterX + 110,
-	display.contentCenterY - 60, native.systemFont, 50)
+	scoreText = display.newText(mydata.score,pointCol.x,
+	pointCol.y + 100, "DIOGENES", 70)
 	scoreText:setFillColor(0,0,0)
 	scoreText.alpha = 0 
 	screenGroup:insert(scoreText)
+	
+	coinText = display.newText(mydata.coins,pointVase.x,
+	scoreText.y, "DIOGENES", 70)
+	coinText:setFillColor(0,0,0)
+	coinText.alpha = 1 
+	screenGroup:insert(coinText)
+	
+	totalScoreText = display.newText(mydata.totalScore,display.contentCenterX,
+	yourScore.y + 180, "DIOGENES", 120)
+	totalScoreText:setFillColor(1,0,0)
+	totalScoreText.alpha = 1 
+	screenGroup:insert(totalScoreText)
 		
 	bestText = score.init({
-	fontSize = 50,
-	font = "Helvetica",
-	x = display.contentCenterX + 70,
-	y = display.contentCenterY + 85,
-	maxDigits = 7,
+	fontSize = 80,
+	font = "DIOGENES",
+	x = display.contentCenterX,
+	y = highScore.y + 140,
+	maxDigits = 1,
 	leadingZeros = false,
 	filename = "scorefile.txt",
 	})
@@ -203,6 +266,7 @@ function scene:createScene(event)
 	bestText:setFillColor(0,0,0)
 	screenGroup:insert(bestText)
 	
+	loadScore()
 end
 
 function scene:enterScene(event)
@@ -210,8 +274,6 @@ function scene:enterScene(event)
 	restart:addEventListener("touch", restartGame)
 	showGameOver()
 	displayAd()
-	
-	loadScore()
 end
 
 function scene:exitScene(event)
