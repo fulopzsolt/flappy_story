@@ -142,10 +142,8 @@ function scene:createScene(event)
 	player.anchorY = 0.5
 	player.x = display.contentCenterX - 450
 	player.y = display.contentCenterY
-	local physicsData = (require "player").physicsData(scaleFactor)
 	
-	-- physics.addBody(player, "static", {density=10, bounce=0, friction=0})
-	physics.addBody(player, "static", physicsData:get("single_bird") )
+	physics.addBody(player, "static", {density=10, bounce=0, friction=0})
 	player.isFixedRotation = true
 	player:applyForce(0, -300, player.x, player.y)
 	player:play()
@@ -469,36 +467,44 @@ function moveColumns()
 			end	
 		
 end
+
 function addDragMove(event)
-	local canMoveIt = true
+
 	if event.phase == "began" then
-		if ((event.target.tag == "column") or (event.target.tag == "bottomColumn")) then
+		if (event.target.tag ~= "corn") then
 		    event.target.markY = event.y	
 		    event.target.goodTouch = true
 		end
 	-- return false
-	
 	elseif event.phase == "moved" then
-		if ((event.target.tag == "column") or (event.target.tag == "bottomColumn")) and (event.target.goodTouch == true)then
-			if (event.target.y > display.contentHeight - 163) then	
-				event.target.y = display.contentHeight - 163
+		if (event.target.tag ~= "corn") and (event.target.goodTouch == true)then
+			if (event.target.y > display.contentHeight - 260) then	
+				event.target.y = display.contentHeight - 260
 				if (event.target.type == "extra") then
 					if (corn.isVisible ) then
 						corn.y = display.contentHeight - 163 - 120
 					end
-					
+					--if (corn2.isVisible ) then
+					--	corn2.y = display.contentHeight - 163 - 120
+					--end
 				end
 			elseif (event.target.y < 80) then 
-				event.target.y = 80 
-			else--if (event.y <= display.contentHeight - 180) then
+				event.target.y = 80
+			elseif (event.y <= display.contentHeight - 180) then
 				local y = (event.y - event.target.markY)
+--				print(y)
 				event.target.y = event.target.y + y
 				event.target.markY = event.y
 				if (event.target.type == "extra") then
 					if (corn.isVisible ) then
 						corn.y = corn.y + y
 					end
-					
+					--if corn2 ~= nil then
+		
+					--	if (corn2.isVisible ) then
+					--		corn2.y = corn2.y + y
+					--	end	
+					--end
 				end
 					
 			end
@@ -507,51 +513,6 @@ function addDragMove(event)
 	return true
 
 end
---regi mozgatas function addDragMove(event)
-
--- 	if event.phase == "began" then
--- 		if (event.target.tag ~= "corn") then
--- 		    event.target.markY = event.y	
--- 		    event.target.goodTouch = true
--- 		end
--- 	-- return false
--- 	elseif event.phase == "moved" then
--- 		if (event.target.tag ~= "corn") and (event.target.goodTouch == true)then
--- 			if (event.target.y > display.contentHeight - 260) then	
--- 				event.target.y = display.contentHeight - 260
--- 				if (event.target.type == "extra") then
--- 					if (corn.isVisible ) then
--- 						corn.y = display.contentHeight - 163 - 120
--- 					end
--- 					--if (corn2.isVisible ) then
--- 					--	corn2.y = display.contentHeight - 163 - 120
--- 					--end
--- 				end
--- 			elseif (event.target.y < 80) then 
--- 				event.target.y = 80
--- 			elseif (event.y <= display.contentHeight - 180) then
--- 				local y = (event.y - event.target.markY)
--- --				print(y)
--- 				event.target.y = event.target.y + y
--- 				event.target.markY = event.y
--- 				if (event.target.type == "extra") then
--- 					if (corn.isVisible ) then
--- 						corn.y = corn.y + y
--- 					end
--- 					--if corn2 ~= nil then
-		
--- 					--	if (corn2.isVisible ) then
--- 					--		corn2.y = corn2.y + y
--- 					--	end	
--- 					--end
--- 				end
-					
--- 			end
--- 		end
--- 	end
--- 	return true
-
--- end
 
 
 
@@ -578,10 +539,10 @@ function testListener(event, obj)
 function addColumns()
 	
 	height = 600
-	local physicsData = (require "columns").physicsData(scaleFactor)
+	local physicsData = (require "column").physicsData(scaleFactor)
 	
 		column = display.newImage('greekColumn.png')
-		physics.addBody( column, "kinematic", physicsData:get("greekColumn") )
+		physics.addBody( column, "kinematic", physicsData:get("column") )
 		column.anchorX = 0.5
 		column.anchorY = 0.5
 		column.x = display.contentWidth + 100
@@ -597,7 +558,7 @@ function addColumns()
 		elements:insert(column)
 
 		column2 = display.newImage('greekColumn2.png')
-		physics.addBody( column2, "kinematic", physicsData:get("greekColumn2") )
+		physics.addBody( column2, "kinematic", physicsData:get("column") )
 		column2.anchorX = 0.5
 		column2.anchorY = 0.5
 		column2.x = display.contentWidth + 800
@@ -634,7 +595,7 @@ function addColumns()
 		corn:addEventListener( "collision", corn )
 		specialColumn.scoreAdded = false
 		physics.addBody( specialColumn, "kinematic", physicsData:get("bottomColumn") )
-		physics.addBody( corn, "static", physicsData:get("corn") )--{density = 2, friction = 0, bounce = 0} ) --physicsData:get("corn")
+		physics.addBody( corn, "static", {density = 2, friction = 0, bounce = 0} ) --physicsData:get("corn")
 		specialColumn:addEventListener("touch", addDragMove)
 		elements:insert(specialColumn)
 		elements:insert(corn)
