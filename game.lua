@@ -33,7 +33,7 @@ function intro()
 
 function scene:createScene(event)
 
-	--physics.setDrawMode("hybrid")
+	physics.setDrawMode("hybrid")
 	local screenGroup = self.view
 
     bg = display.newImage('bg2.png')
@@ -463,7 +463,7 @@ function moveColumns()
 				elements[a]:removeEventListener("touch", doTouch)
 				elements:remove(elements[a])
 				--elements[a]:removeSelf()
-				--elements[a] = nil]]--
+			 	--elements[a] = nil]]--
 			end	
 		
 end
