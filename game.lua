@@ -18,7 +18,8 @@ deadSound = audio.loadSound("dead.wav")
 mydata.coins = 0
 
 function scene:createScene(event)
-
+	ad = require( "bottomAd" )
+	ad.init()
 	--physics.setDrawMode("hybrid")
 	local screenGroup = self.view
 
@@ -109,7 +110,7 @@ function scene:createScene(event)
 	player.x = display.contentCenterX - 150
 	player.y = display.contentCenterY
 	
-	physics.addBody(player, "static", {density=10, bounce=0, friction=0})
+	physics.addBody(player, "kinematic", {density=10, bounce=0, friction=0})
 	player.isFixedRotation = true
 	player:applyForce(0, -300, player.x, player.y)
 	player:play()
@@ -327,10 +328,10 @@ function start(event)
 			-- 	mydata.bannerShowed = true
 			-- end
 
-			if (mydata.bannerShowed == false) then
-				displayAd()
-				mydata.bannerShowed = true
-			end
+			-- if (mydata.bannerShowed == false) then
+			-- 	displayAd()
+			-- 	mydata.bannerShowed = true
+			-- end
 
 			paused = false
 			Runtime:addEventListener( "key", pauseGame )
@@ -416,13 +417,14 @@ function moveColumns()
 end
 
 function addDragMove(event)
-
+	local canMoveIt = true
 	if event.phase == "began" then
 		if (event.target.tag == "column") then
 		    event.target.markY = event.y	
 		    event.target.goodTouch = true
 		end
 	-- return false
+	
 	elseif event.phase == "moved" then
 		if (event.target.tag == "column") and (event.target.goodTouch == true)then
 			if (event.target.y > display.contentHeight - 163) then	
@@ -436,10 +438,10 @@ function addDragMove(event)
 					end
 				end
 			elseif (event.target.y < 80) then 
-				event.target.y = 80
-			elseif (event.y <= display.contentHeight - 180) then
+				event.target.y = 80 
+			else--if (event.y <= display.contentHeight - 180) then
 				local y = (event.y - event.target.markY)
---				print(y)
+				print(y..'___'..event.y)
 				event.target.y = event.target.y + y
 				event.target.markY = event.y
 				if (event.target.type == "extra") then
@@ -490,10 +492,10 @@ function addColumns()
 	local physicsData = (require "column").physicsData(scaleFactor)
 	if (mydata.score % 2 == 0) then
 		column = display.newImageRect('greekColumn.png',124,1800)
-		physics.addBody( column, "kinematic", physicsData:get("column") )
+		-- physics.addBody( column, "kinematic", physicsData:get("column") )
 	else
 		column = display.newImageRect('greekColumn2.png',71,1800)
-		physics.addBody( column, "kinematic", physicsData:get("column") )
+		-- physics.addBody( column, "kinematic", physicsData:get("column") )
 	end
 	column.anchorX = 0.5
 	column.anchorY = 0.5
@@ -571,7 +573,7 @@ local function checkMemory()
 
    collectgarbage( "collect" )
    local memUsage_str = string.format( "MEMORY = %.3f KB", collectgarbage( "count" ) )
-   print( memUsage_str, "TEXTURE = "..(system.getInfo("textureMemoryUsed") / (1024 * 1024) ) )
+   -- print( memUsage_str, "TEXTURE = "..(system.getInfo("textureMemoryUsed") / (1024 * 1024) ) )
 
 end
 
