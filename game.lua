@@ -366,11 +366,6 @@ function start(event)
    
 		if (gameStarted == false) then
 
-			-- if (mydata.bannerShowed == false) then
-			-- 	displayAd()
-			-- 	mydata.bannerShowed = true
-			-- end
-
 			if (mydata.bannerShowed == false) then
 				displayAd()
 				mydata.bannerShowed = true
