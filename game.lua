@@ -33,7 +33,7 @@ function intro()
 
 function scene:createScene(event)
 
-	-- physics.setDrawMode("hybrid")
+	physics.setDrawMode("hybrid")
 	local screenGroup = self.view
 
     bg = display.newImage('bg3.png')
@@ -365,11 +365,6 @@ end
 function start(event)
    
 		if (gameStarted == false) then
-
-			if (mydata.bannerShowed == false) then
-				displayAd()
-				mydata.bannerShowed = true
-			end
 
 			if (mydata.bannerShowed == false) then
 				displayAd()
