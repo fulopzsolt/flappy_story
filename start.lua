@@ -55,7 +55,7 @@ function scene:createScene(event)
 	
 	--mydata.sound = false
 
-	background = display.newImage("bg2.png")
+	background = display.newImage("bg3.png")
 	background.anchorX = 0.5
 	background.anchorY = 1
 	background.x = display.contentWidth * 0.5

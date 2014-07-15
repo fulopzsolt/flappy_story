@@ -11,7 +11,7 @@ local introNr
 
 mydata.score = 0
 
-level = 3
+level = 1
 
 pickupSound = audio.loadSound("pickup.wav")
 deadSound = audio.loadSound("dead.wav")
@@ -36,7 +36,7 @@ function scene:createScene(event)
 	-- physics.setDrawMode("hybrid")
 	local screenGroup = self.view
 
-    bg = display.newImage('bg2.png')
+    bg = display.newImage('bg3.png')
 	bg.anchorX = 0.5
 	bg.anchorY = 1
 	bg.x = display.contentWidth * 0.5
@@ -86,14 +86,14 @@ function scene:createScene(event)
 	pointVase = display.newImage('pointVase.png')
 	pointVase.anchorX = 0
 	pointVase.anchorY = 0
-	pointVase.x = 100
+	pointVase.x = display.contentCenterX + 200
 	pointVase.y = 10
 	screenGroup:insert(pointVase)
 	
 	pointCol = display.newImage('pointCol.png')
 	pointCol.anchorX = 0
 	pointCol.anchorY = 0
-	pointCol.x = 580
+	pointCol.x = display.contentCenterX - 350
 	pointCol.y = 10
 	screenGroup:insert(pointCol)
 	
@@ -104,7 +104,14 @@ function scene:createScene(event)
     DIOGENES = "DIOGENES"
 	end
 	
-	levelText = display.newText("10 x",480, 5, "DIOGENES", 58)
+	levelTextX = display.newText("x",pointCol.x + 90, 5, "DIOGENES", 58)
+	levelTextX:setFillColor(255,255,255)
+	levelTextX.alpha = 1
+	levelTextX.anchorX = 0
+	levelTextX.anchorY = 0
+	screenGroup:insert(levelTextX)
+	
+	levelText = display.newText(level*10,pointCol.x + 130, 5, "DIOGENES", 58)
 	levelText:setFillColor(255,255,255)
 	levelText.alpha = 1
 	levelText.anchorX = 0
@@ -113,12 +120,12 @@ function scene:createScene(event)
 	
 	levelNr = display.newText(level,740, 5, "DIOGENES", 58)
 	levelNr:setFillColor(255,255,255)
-	levelNr.alpha = 1
+	levelNr.alpha = 0
 	levelNr.anchorX = 0
 	levelNr.anchorY = 0
 	screenGroup:insert(levelNr)
 	
-	coinsNr = display.newText(mydata.score,180, 5, "DIOGENES", 58)
+	coinsNr = display.newText(mydata.score, pointVase.x+75, 5, "DIOGENES", 58)
 	coinsNr:setFillColor(255,255,255)
 	coinsNr.alpha = 1
 	coinsNr.anchorX = 0
@@ -168,6 +175,18 @@ function scene:createScene(event)
 	
 end
 
+function eltolodas()
+
+	local vx, vy = player:getLinearVelocity()
+	print("madar sebesseg", vx, vy)
+	if player.x ~= display.contentCenterX - 170 then 
+	player:setLinearVelocity(0, vy)
+	player.x = display.contentCenterX - 170
+	player.y = aktH
+	print("madar sebesseg", vx, vy)
+	end
+end	
+
 function onCornCollision( self, event )
 
 	-- body
@@ -176,12 +195,15 @@ function onCornCollision( self, event )
 		pickup = audio.play(pickupSound, {channel=1})
 		end
 
-		mydata.coins = mydata.coins + 50
+		mydata.coins = mydata.coins + level * 30
 		coinsNr.text = mydata.coins
 		
 		self:removeSelf()
 		self.object2 = nil
+		
+		aktH = player.y
 
+		eltolodasEllenorzes = timer.performWithDelay( 1, eltolodas, 1 )
 	end
 	
 end
@@ -385,6 +407,8 @@ local distanceHelper = 170
 
 function moveColumns()
 
+		local physicsData = (require "columns").physicsData(scaleFactor)
+
 		for a = elements.numChildren,1,-1  do
 			elements[a]:addEventListener( "touch", doTouch )
 			-- elements[a].tag ='column'
@@ -393,13 +417,13 @@ function moveColumns()
 			if(elements[a].x < display.contentCenterX - 170) then
 			
 				if elements[a].scoreAdded == false then
-					print("ssssssssss")
 					if elements[a].type == "column" then
 					mydata.score = mydata.score + level*10
 					scoreText.text = mydata.score
 					--if mydata.score == 2 then
-					--level = level + 1
-					--levelNr.text=level
+					level = level + 1
+					levelNr.text=level
+					levelText.text = level *10
 					--print(level)
 					--end
 					end
@@ -448,7 +472,9 @@ function moveColumns()
 						corn.type = 'extra'
 						corn.collision = onCornCollision
 						corn:addEventListener( "collision", corn )
-						physics.addBody( corn, "static", {density = 2, friction = 0, bounce = 0} ) --physicsData:get("corn")
+						physics.addBody( corn, "static", physicsData:get("corn") )
+						
+						--physics.addBody( corn, "static", {density = 2, friction = 0, bounce = 0} ) --physicsData:get("corn")
 						elements:insert(corn)
 						end
 					elseif elements[a].tag == "corn" then
@@ -465,10 +491,11 @@ function moveColumns()
 				elements[a]:removeEventListener("touch", doTouch)
 				elements:remove(elements[a])
 				--elements[a]:removeSelf()
-				--elements[a] = nil]]--
+			 	--elements[a] = nil]]--
 			end	
 		
 end
+
 function addDragMove(event)
 	local canMoveIt = true
 	if event.phase == "began" then
@@ -509,49 +536,49 @@ function addDragMove(event)
 end
 --regi mozgatas function addDragMove(event)
 
--- 	if event.phase == "began" then
--- 		if (event.target.tag ~= "corn") then
--- 		    event.target.markY = event.y	
--- 		    event.target.goodTouch = true
--- 		end
--- 	-- return false
--- 	elseif event.phase == "moved" then
--- 		if (event.target.tag ~= "corn") and (event.target.goodTouch == true)then
--- 			if (event.target.y > display.contentHeight - 260) then	
--- 				event.target.y = display.contentHeight - 260
--- 				if (event.target.type == "extra") then
--- 					if (corn.isVisible ) then
--- 						corn.y = display.contentHeight - 163 - 120
--- 					end
--- 					--if (corn2.isVisible ) then
--- 					--	corn2.y = display.contentHeight - 163 - 120
--- 					--end
--- 				end
--- 			elseif (event.target.y < 80) then 
--- 				event.target.y = 80
--- 			elseif (event.y <= display.contentHeight - 180) then
--- 				local y = (event.y - event.target.markY)
--- --				print(y)
--- 				event.target.y = event.target.y + y
--- 				event.target.markY = event.y
--- 				if (event.target.type == "extra") then
--- 					if (corn.isVisible ) then
--- 						corn.y = corn.y + y
--- 					end
--- 					--if corn2 ~= nil then
+ --[[	if event.phase == "began" then
+ 		if (event.target.tag ~= "corn") then
+ 		    event.target.markY = event.y	
+ 		    event.target.goodTouch = true
+ 		end
+ 	-- return false
+ 	elseif event.phase == "moved" then
+ 		if (event.target.tag ~= "corn") and (event.target.goodTouch == true)then
+ 			if (event.target.y > display.contentHeight - 260) then	
+ 				event.target.y = display.contentHeight - 260
+ 				if (event.target.type == "extra") then
+ 					if (corn.isVisible ) then
+ 						corn.y = display.contentHeight - 163 - 120
+ 					end
+ 					--if (corn2.isVisible ) then
+ 					--	corn2.y = display.contentHeight - 163 - 120
+ 					--end
+ 				end
+ 			elseif (event.target.y < 80) then 
+ 				event.target.y = 80
+ 			elseif (event.y <= display.contentHeight - 180) then
+ 				local y = (event.y - event.target.markY)
+ --				print(y)
+ 				event.target.y = event.target.y + y
+ 				event.target.markY = event.y
+ 				if (event.target.type == "extra") then
+ 					if (corn.isVisible ) then
+ 						corn.y = corn.y + y
+ 					end
+ 					--if corn2 ~= nil then
 		
--- 					--	if (corn2.isVisible ) then
--- 					--		corn2.y = corn2.y + y
--- 					--	end	
--- 					--end
--- 				end
-					
--- 			end
--- 		end
--- 	end
--- 	return true
+ 					--	if (corn2.isVisible ) then
+ 					--		corn2.y = corn2.y + y
+ 					--	end	
+ 					--end
+ 				end
+				
+ 			end
+ 		end
+ 	end
+ 	return true
 
--- end
+ end]]--
 
 
 
