@@ -33,7 +33,7 @@ function intro()
 
 function scene:createScene(event)
 
-	physics.setDrawMode("hybrid")
+	--physics.setDrawMode("hybrid")
 	local screenGroup = self.view
 
     bg = display.newImage('bg3.png')
@@ -64,7 +64,7 @@ function scene:createScene(event)
 	platform.anchorY = 1
 	platform.x = 0
 	platform.y = display.viewableContentHeight - 110
-	physics.addBody(platform, "static", {density=.1, bounce=0.1, friction=.2})
+	--physics.addBody(platform, "static", {density=.1, bounce=0.1, friction=.2})
 	platform.speed = 4
 	screenGroup:insert(platform)
 	
@@ -424,6 +424,8 @@ function moveColumns()
 					level = level + 1
 					levelNr.text=level
 					levelText.text = level *10
+					--transition.to( levelNr, { time=500, Xscale=2} )
+					--transition.to( levelNr, { time=500, Xscale=1} )
 					--print(level)
 					--end
 					end
@@ -450,7 +452,7 @@ function moveColumns()
 			
 			if(elements[a].x > -100) then
 
-					elements[a].x = elements[a].x - (3 + 1* level)
+					elements[a].x = elements[a].x - (5 + 0.7*level)
 			else 
 				
 				--if (elements[a].newColumnCreated == false) then
@@ -460,6 +462,7 @@ function moveColumns()
 						
 					elseif elements[a].tag == "bottomColumn" then
 						elements[a].y = platform.y - 150
+						corn.y = specialColumn.y - 80
 						
 						if corn.x == nil then
 						corn = display.newImage('corn.png')
@@ -507,16 +510,16 @@ function addDragMove(event)
 	
 	elseif event.phase == "moved" then
 		if ((event.target.tag == "column") or (event.target.tag == "bottomColumn")) and (event.target.goodTouch == true)then
-			if (event.target.y > display.contentHeight - 163) then	
-				event.target.y = display.contentHeight - 163
+			if (event.target.y > display.contentHeight ) then	
+				event.target.y = display.contentHeight 
 				if (event.target.type == "extra") then
 					if (corn.isVisible ) then
-						corn.y = display.contentHeight - 163 - 120
+						corn.y = display.contentHeight  - 120
 					end
 					
 				end
-			elseif (event.target.y < 80) then 
-				event.target.y = 80 
+			elseif (event.target.y < -320) then 
+				event.target.y = -320 
 			else--if (event.y <= display.contentHeight - 180) then
 				local y = (event.y - event.target.markY)
 				event.target.y = event.target.y + y
@@ -534,6 +537,8 @@ function addDragMove(event)
 	return true
 
 end
+
+
 --regi mozgatas function addDragMove(event)
 
  --[[	if event.phase == "began" then

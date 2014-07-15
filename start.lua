@@ -160,6 +160,7 @@ function scene:createScene(event)
 	player.anchorY = 0.5
 	player.x = display.contentCenterX + 240
 	player.y = display.contentCenterY 
+	player:scale(1.5,1.5)
 	player:play()
 	screenGroup:insert(player)
 	

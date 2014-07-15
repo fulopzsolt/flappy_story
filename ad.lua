@@ -109,22 +109,6 @@ function restartGame(event)
      end
 end
 
-function showStart()
-	startTransition = transition.to(restart,{time=200, alpha=1})
-	scoreTextTransition = transition.to(scoreText,{time=600, alpha=1})
-	scoreTextTransition = transition.to(bestText,{time=600, alpha=1})
-end
-
-function showScore()
-	--scoreTransition = transition.to(scoreBg,{time=600, alpha = 1})
-	scoreTransition = transition.to(yourScore,{time=600, alpha = 1,onComplete=showStart})
-	
-end
-
-function showGameOver()
-	fadeTransition = transition.to(gameOver,{time=600, alpha=1,onComplete=showScore})
-end
-
 function loadScore()
 	local prevScore = score.load()
 	if prevScore ~= nil then
@@ -139,6 +123,82 @@ function loadScore()
 	end
 end
 
+function showStart()
+	loadScore()
+	startTransition = transition.to(restart,{time=200, alpha=1})
+	scoreTextTransition = transition.to(scoreText,{time=600, alpha=1})
+	--scoreTextTransition = transition.to(bestText,{time=600, alpha=1})
+end
+
+local scoreAnimation3 = {}
+function scoreAnimation3:timer(event)
+
+	if vazaPont == 0 then 
+	 timer.cancel( event.source )
+	 timer.performWithDelay( 500, showStart, 1 )
+		else 
+			if vazaPont > 200 then 
+				vazaPont = vazaPont - 100
+				osszPont = osszPont + 100
+			else 
+				vazaPont = vazaPont - 10
+				osszPont = osszPont + 10
+			end
+	coinText.text = vazaPont
+	totalScoreText.text = osszPont
+	end
+end
+
+local scoreAnimation2 = {}
+function scoreAnimation2:timer(event)
+
+	if oszlopPont == 0 then 
+	 timer.cancel( event.source )
+	 animacio2 = timer.performWithDelay( 80, scoreAnimation3, 0 )
+	else 
+		if oszlopPont > 200 then
+			oszlopPont = oszlopPont - 100
+			osszPont = osszPont + 100
+		else 	
+			oszlopPont = oszlopPont - 10
+			osszPont = osszPont + 10
+		end	
+			scoreText.text = oszlopPont
+			totalScoreText.text = osszPont
+	end
+end
+
+function scoreAnimation()
+print("ittttttt")
+	oszlopPont = mydata.score
+	vazaPont = mydata.coins
+	osszPont = 0
+	animacio1 = timer.performWithDelay( 80, scoreAnimation2, 0 )
+end
+	
+
+function showScoreText()
+	--scoreTransition = transition.to(scoreBg,{time=600, alpha = 1})
+	scoreTransition = transition.to(scoreText,{time=600, alpha = 1})
+	score2Transition = transition.to(coinText,{time=600, alpha = 1})
+	totalScoreText.text = 0
+	score3Transition = transition.to(totalScoreText,{time=600, alpha = 1,onComplete=scoreAnimation})
+end
+	
+function showYourScore()
+	--scoreTransition = transition.to(scoreBg,{time=600, alpha = 1})
+	scoreTransition = transition.to(YourScoreGroup,{time=600, alpha = 1,onComplete=showScoreText})
+	
+end
+
+function showHighScore()
+	HSTransition = transition.to(HighScoreGroup,{time=600, alpha=1,onComplete=showYourScore})
+end
+
+function showGameOver()
+	fadeTransition = transition.to(gameOver,{time=600, alpha=1,onComplete=showHighScore})
+end
+
 function saveScore()
 	score.save()
 end
@@ -150,7 +210,12 @@ function scene:createScene(event)
 	print(display.contentHeight,tav)
 
 	local screenGroup = self.view
-	background = display.newImage("bg2.png")
+	
+	HighScoreGroup = display.newGroup()
+	
+	YourScoreGroup = display.newGroup()
+	
+	background = display.newImage("bg3.png")
 	background.anchorX = 0.5
 	background.anchorY = 1
 	background.x = display.contentCenterX
@@ -186,15 +251,15 @@ function scene:createScene(event)
 	tableS.x = display.contentCenterX 
 	tableS.y = gameOver.y + gameOver.contentHeight + tav
 	tableS.alpha = 1
-	screenGroup:insert(tableS)
+	HighScoreGroup:insert(tableS)
 	
 	yourScore = display.newImage("yourScore.png")
 	yourScore.anchorX = 0.5
 	yourScore.anchorY = 0
 	yourScore.x = display.contentCenterX 
 	yourScore.y = tableS.y + tableS.contentHeight + tav
-	yourScore.alpha = 0
-	screenGroup:insert(yourScore)
+	yourScore.alpha = 1
+	YourScoreGroup:insert(yourScore)
 	
 	highScore = display.newImage("highScore.png")
 	highScore.anchorX = 0.5
@@ -202,7 +267,7 @@ function scene:createScene(event)
 	highScore.x = display.contentCenterX 
 	highScore.y = tableS.y + 100 
 	highScore.alpha = 1
-	screenGroup:insert(highScore)
+	HighScoreGroup:insert(highScore)
 	
 	pointCol = display.newImage('pointCol.png')
 	pointCol.anchorX = 0.5
@@ -210,7 +275,7 @@ function scene:createScene(event)
 	pointCol:scale(1.5,1.5)
 	pointCol.x = 110
 	pointCol.y = yourScore.y + yourScore.contentHeight + tav 
-	screenGroup:insert(pointCol)
+	YourScoreGroup:insert(pointCol)
 	
 	pointVase = display.newImage('pointVase.png')
 	pointVase.anchorX = 0.5
@@ -218,7 +283,7 @@ function scene:createScene(event)
 	pointVase:scale(1.5,1.5)
 	pointVase.x = display.contentWidth - 110
 	pointVase.y = pointCol.y 
-	screenGroup:insert(pointVase)
+	YourScoreGroup:insert(pointVase)
 	
 	
 	
@@ -241,32 +306,34 @@ function scene:createScene(event)
 	scoreText.y, "DIOGENES", 70)
 	coinText:setFillColor(0,0,0)
 	coinText.anchorY = 0
-	coinText.alpha = 1 
+	coinText.alpha = 0 
 	screenGroup:insert(coinText)
 	
 	totalScoreText = display.newText(mydata.totalScore,display.contentCenterX,
 	pointCol.y - 20, "DIOGENES", 120)
 	totalScoreText.anchorY = 0
 	totalScoreText:setFillColor(1,0,0)
-	totalScoreText.alpha = 1 
+	totalScoreText.alpha = 0 
 	screenGroup:insert(totalScoreText)
 		
 	bestText = score.init({
 	fontSize = 80,
 	font = "DIOGENES",
 	x = display.contentCenterX,
-	y = highScore.y + 140,
+	y = highScore.y + 150,
 	maxDigits = 1,
 	leadingZeros = false,
 	filename = "scorefile.txt",
 	})
 	bestScore = score.get()
 	bestText.text = bestScore
-	bestText.alpha = 0
+	bestText.alpha = 1
 	bestText:setFillColor(0,0,0)
-	screenGroup:insert(bestText)
+	HighScoreGroup:insert(bestText)
 	
-	loadScore()
+	HighScoreGroup.alpha = 0
+	
+	YourScoreGroup.alpha = 0
 end
 
 function scene:enterScene(event)
@@ -277,6 +344,10 @@ function scene:enterScene(event)
 end
 
 function scene:exitScene(event)
+	HighScoreGroup:removeSelf()
+	HighScoreGroup = nil
+	YourScoreGroup:removeSelf()
+	YourScoreGroup = nil
 	restart:removeEventListener("touch", restartGame)
 	transition.cancel(fadeTransition)
 	transition.cancel(scoreTransition)
