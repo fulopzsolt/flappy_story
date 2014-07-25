@@ -21,8 +21,8 @@ end
 
 function groundScroller(self,event)
 	
-	if self.x < (-900 + (self.speed*2)) then
-		self.x = 900
+	if self.x < (-1529 + (self.speed*2)) then
+		self.x = 1529
 	else 
 		self.x = self.x - self.speed
 	end
@@ -83,7 +83,7 @@ function scene:createScene(event)
 	title.y = display.contentCenterY 
 	screenGroup:insert(title)
 	
-	platform = display.newImageRect('platform.png',900,53)
+	platform = display.newImageRect('platform.png',1529,53)
 	platform.anchorX = 0
 	platform.anchorY = 1
 	platform.x = 0
@@ -92,7 +92,7 @@ function scene:createScene(event)
 	platform.speed = 4
 	screenGroup:insert(platform)
 
-	platform2 = display.newImageRect('platform.png',900,53)
+	platform2 = display.newImageRect('platform.png',1529,53)
 	platform2.anchorX = 0
 	platform2.anchorY = 1
 	platform2.x = platform2.width
@@ -217,7 +217,7 @@ function helpEltunik()
 
 	column2.alpha=0
 	Runtime:removeEventListener("enterFrame",helpHandColumn)
-	transition.to(helpGroup,{time=700, alpha = 0, onComplete=helpRemove})
+	transition.to(helpGroup,{time=100, alpha = 0, onComplete=helpRemove})
 	help:addEventListener("touch", helpWindow)
 
 end

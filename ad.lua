@@ -106,6 +106,7 @@ function restartGame(event)
 end
 
 function loadScore()
+
 	local prevScore = score.load()
 	if prevScore ~= nil then
 		if prevScore <= mydata.totalScore then

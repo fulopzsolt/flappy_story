@@ -15,7 +15,7 @@ level = 1
 
 pickupSound = audio.loadSound("pickup.wav")
 deadSound = audio.loadSound("dead.wav")
-
+columnSound = audio.loadSound("oszlop.wav")
 
 mydata.coins = 0
 
@@ -33,7 +33,7 @@ function intro()
 
 function scene:createScene(event)
 
-	--physics.setDrawMode("hybrid")
+	physics.setDrawMode("hybrid")
 	local screenGroup = self.view
 
     bg = display.newImage('bg3.png')
@@ -59,7 +59,7 @@ function scene:createScene(event)
 	ground.y = display.contentHeight
 	screenGroup:insert(ground)
 
-	platform = display.newImageRect('platform.png',900,53)
+	platform = display.newImageRect('platform.png',1529,53)
 	platform.anchorX = 0
 	platform.anchorY = 1
 	platform.x = 0
@@ -68,7 +68,7 @@ function scene:createScene(event)
 	platform.speed = 4
 	screenGroup:insert(platform)
 	
-	platform2 = display.newImageRect('platform.png',900,53)
+	platform2 = display.newImageRect('platform.png',1529,53)
 	platform2.anchorX = 0
 	platform2.anchorY = 1
 	platform2.x = platform2.width
@@ -234,8 +234,8 @@ end
 
 function platformScroller(self,event)
 	
-	if self.x < (-900 + (self.speed*2)) then
-		self.x = 900
+	if self.x < (-1529 + (self.speed*2)) then
+		self.x = 1529
 	else 
 		self.x = self.x - self.speed
 	end
@@ -413,6 +413,9 @@ function moveColumns()
 			
 				if elements[a].scoreAdded == false then
 					if elements[a].type == "column" then
+						if mydata.sound == true then
+							oszlop = audio.play(columnSound, {channel=3})
+						end
 					mydata.score = mydata.score + level*10
 					scoreText.text = mydata.score
 					--if mydata.score == 2 then
