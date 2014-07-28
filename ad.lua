@@ -50,7 +50,7 @@ function displayAd()
 			statusText.text = "Error Loading Ad"
 			statusText.x = display.contentWidth * 0.5
 
-			showAd( "interstitial" )
+			showAd( "banner" )
 		else
 			statusText:setFillColor( 0, 255, 0 )
 			statusText.text = "Successfully Loaded Ad"
@@ -82,7 +82,11 @@ function displayAd()
 
 	-- if on simulator, let user know they must build for device
 	if sysEnv == "simulator" then
-		-- warningText.x, warningText.y = display.contentWidth * 0.5, display.contentHeight * 0.5
+		local font, size = native.systemFontBold, 22
+		local warningText = display.newText( "Please build for device or Xcode simulator to test this sample.", 0, 0, 290, 300, font, size )
+		warningText:setFillColor( 255 )
+		-- warningText:setReferencePoint( display.CenterReferencePoint )
+		warningText.x, warningText.y = display.contentWidth * 0.5, display.contentHeight * 0.5
 	else
 		-- start with banner ad
 		showAd( "interstitial" )
@@ -118,6 +122,7 @@ function showScore()
 end
 
 function showGameOver()
+	displayAd()
 	fadeTransition = transition.to(gameOver,{time=600, alpha=1,onComplete=showScore})
 end
 
@@ -268,7 +273,7 @@ end
 function scene:enterScene(event)
 	storyboard.removeScene("game")
 	restart:addEventListener("touch", restartGame)
-	displayAd()
+
 	showGameOver()
 	
 end
