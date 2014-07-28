@@ -336,7 +336,7 @@ end
 function scene:enterScene(event)
 	storyboard.removeScene("game")
 	restart:addEventListener("touch", restartGame)
-	displayAd()
+	-- displayAd()
 	showGameOver()
 	
 end
